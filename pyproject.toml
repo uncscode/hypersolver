@@ -2,7 +2,7 @@
 name = "hypersolver"
 description = "hyper---bolic partial differential equations---solver"
 requires-python = ">=3.7"
-license = {file = "LICENSE"}
+license = {file = "license"}
 authors = [
     {name = "ngam", email="67342040+ngam@users.noreply.github.com"},
 ]
