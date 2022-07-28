@@ -1,4 +1,10 @@
-""" Lax-Friedrics scheme """
+""" Lax-Friedrics scheme
+
+    ∂n/∂t + ∂(fn)/∂x = g
+
+"""
+
+# todo: fix numerical formulation to use actual flux term (fn) and not f.
 
 import numpy as np
 
