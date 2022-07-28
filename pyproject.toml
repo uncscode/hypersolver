@@ -1,0 +1,37 @@
+[project]
+name = "hypersolver"
+description = "hyper---bolic partial differential equations---solver"
+requires-python = ">=3.7"
+authors = [
+    {name = "ngam", email="67342040+ngam@users.noreply.github.com"},
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
+]
+keywords = [
+    "hyperbolic", "PDE", "solver"
+]
+
+dependencies = ["numpy", "scipy", "numba"]
+
+# This is set automatically by flit using `hypersolver.__version__`
+dynamic = ["version"]
+
+[project.urls]
+homepage = "https://github.com/ngam/hypersolver"
+repository = "https://github.com/ngam/hypersolver"
+
+[project.optional-dependencies]
+dev = [
+    "pylint", "pytest", "autopep8", "jupyterlab", "pytype",
+    "typing", "build", "flake8", "jupyter-book", "ghp-import",
+    "matplotlib",
+]
+
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
