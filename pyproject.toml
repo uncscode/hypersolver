@@ -11,7 +11,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "License :: OSI Approved :: MIT License",
     "Intended Audience :: Science/Research",
-    "Topic :: Scientific/Engineering :: Atmospheric Science",
+    "Topic :: Scientific/Engineering",
 ]
 keywords = [
     "hyperbolic", "PDE", "solver"
