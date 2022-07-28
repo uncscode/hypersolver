@@ -12,7 +12,7 @@ def next_step(
     flux_term,
     sink_term
 ):
-    """ Lax-Friedrics scheme """
+    """ next step according to Lax-Friedrics scheme """
 
     result = this_step.copy()
 
@@ -48,7 +48,7 @@ def solver(
     sink_term,
     **kwargs
 ):
-    """ Lax-Friedrics scheme """
+    """ solver accorrding to Lax-Friedrics scheme """
 
     stability_factor = kwargs.get('stability_factor', 0.8)
     verbosity = kwargs.get('verbosity', 0)
@@ -58,7 +58,7 @@ def solver(
     if isinstance(flux_term, type(next_step)):
         flux_term = flux_term(init_vals, vars_vals, **kwargs)
     if isinstance(sink_term, type(next_step)):
-        sink_term = flux_term(init_vals, vars_vals, **kwargs)
+        sink_term = sink_term(init_vals, vars_vals, **kwargs)
     flux_term = term_util(flux_term, init_vals)
     sink_term = term_util(sink_term, init_vals)
 
@@ -88,7 +88,7 @@ def solver(
         if isinstance(flux_term, type(next_step)):
             flux_term = flux_term(sols[itrs], vars_vals, **kwargs)
         if isinstance(sink_term, type(next_step)):
-            sink_term = flux_term(sols[itrs], vars_vals, **kwargs)
+            sink_term = sink_term(sols[itrs], vars_vals, **kwargs)
         flux_term = term_util(flux_term, sols[itrs])
         sink_term = term_util(sink_term, sols[itrs])
 
