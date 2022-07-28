@@ -1,4 +1,9 @@
-""" Lax-Friedrics scheme """
+""" Lax-Friedrics finite-difference scheme
+
+    ∂n/∂t + ∂(fn)/∂x = g
+
+    see: hypersolver.lax_friedrichs.solver
+"""
 
 import numpy as np
 
@@ -12,28 +17,34 @@ def next_step(
     flux_term,
     sink_term
 ):
-    """ next step according to Lax-Friedrics scheme """
+    """ next step according to Lax-Friedrics finite-difference scheme
+    """
 
     result = this_step.copy()
 
     result[1:-1] = (
         0.5 * (this_step[2:] + this_step[:-2]) -
-        1.0 * (this_step[2:] - this_step[:-2]) *
-        flux_term[1:-1] * time_step / (vars_vals[2:] - vars_vals[:-2]) +
+        1.0 * (
+            this_step[2:]*flux_term[2:] -
+            this_step[:-2]*flux_term[:-2]
+        ) * time_step / (vars_vals[2:] - vars_vals[:-2]) +
         sink_term[1:-1] * time_step
     )
 
     result[0] = (
         0.5 * (this_step[1] + this_step[0]) -
-        1.0 * (this_step[1] - this_step[0]) *
-        flux_term[0] * time_step / (vars_vals[1] - vars_vals[0]) +
+        1.0 * (
+            this_step[1]*flux_term[1] - this_step[0]*flux_term[0]
+        ) * time_step / (vars_vals[1] - vars_vals[0]) +
         sink_term[0] * time_step
     )
 
     result[-1] = (
         0.5 * (this_step[-1] + this_step[-2]) -
-        1.0 * (this_step[-1] - this_step[-2]) *
-        flux_term[-1] * time_step / (vars_vals[-1] - vars_vals[-2]) +
+        1.0 * (
+            this_step[-1]*flux_term[-1] -
+            this_step[-2]*flux_term[-2]
+        ) * time_step / (vars_vals[-1] - vars_vals[-2]) +
         sink_term[-1] * time_step
     )
 
@@ -48,9 +59,46 @@ def solver(
     sink_term,
     **kwargs
 ):
-    """ solver accorrding to Lax-Friedrics scheme """
+    """ solver accorrding to Lax-Friedrics finite-difference scheme
 
-    stability_factor = kwargs.get('stability_factor', 0.8)
+        equation:   ∂n/∂t + ∂(fn)/∂x = g
+
+        init_vals:  initial values of n (np.array)
+        vars_vals:  variable values of x (np.array)
+        time_span:  time span of t (list or tuple)
+        flux_term:  flux term, fn (either explicit or function)
+        sink_term:  sink term, g (either explicit or function)
+
+        additional keyword arguments:
+            - stability_factor (float, 0.98): factor of stability (λ)
+            - verbosity (int, 0): verbosity printing level
+
+        returns:
+        np.array(shape(_time.size, vars_vals.size))
+
+        notes:
+        flux_term and sink_term can be either explicit or functions;
+        if functions, they must be defined as: function(n, x, **kwargs)
+
+        numerics (letting i be vars_vals index, j be time_span index):
+
+        n(j+1, i) = (
+            0.5 * (n(j, i+1) + n(j+1, i-1)) -
+            1.0 * (
+                n(j, x+1)*fn(n(t, i+1)) -
+                n(j, x-1)*fn(n(t, i-1))
+            ) * time_step / (x(i+1) - x(i-1)) +
+            g(j, i) * time_step
+
+        time_step = (
+            stability_factor *
+            (x(i+1) - x(i-1)).min() /
+            (fn(j=0, i)).max()
+        )
+
+    """
+
+    stability_factor = kwargs.get('stability_factor', 0.98)
     verbosity = kwargs.get('verbosity', 0)
 
     vars_vals = term_util(vars_vals, init_vals)
