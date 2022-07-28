@@ -2,9 +2,8 @@
 
     ∂n/∂t + ∂(fn)/∂x = g
 
+    see: hypersolver.lax_friedrichs.solver
 """
-
-# todo: fix numerical formulation to use actual flux term (fn) and not f.
 
 import numpy as np
 
@@ -24,22 +23,27 @@ def next_step(
 
     result[1:-1] = (
         0.5 * (this_step[2:] + this_step[:-2]) -
-        1.0 * (this_step[2:] - this_step[:-2]) *
-        flux_term[1:-1] * time_step / (vars_vals[2:] - vars_vals[:-2]) +
+        1.0 * (
+            this_step[2:]*flux_term[2:] -
+            this_step[:-2]*flux_term[:-2]
+        ) * time_step / (vars_vals[2:] - vars_vals[:-2]) +
         sink_term[1:-1] * time_step
     )
 
     result[0] = (
         0.5 * (this_step[1] + this_step[0]) -
-        1.0 * (this_step[1] - this_step[0]) *
-        flux_term[0] * time_step / (vars_vals[1] - vars_vals[0]) +
+        1.0 * (
+            this_step[1]*flux_term[1] - this_step[0]*flux_term[0]
+        ) * time_step / (vars_vals[1] - vars_vals[0]) +
         sink_term[0] * time_step
     )
 
     result[-1] = (
         0.5 * (this_step[-1] + this_step[-2]) -
-        1.0 * (this_step[-1] - this_step[-2]) *
-        flux_term[-1] * time_step / (vars_vals[-1] - vars_vals[-2]) +
+        1.0 * (
+            this_step[-1]*flux_term[-1] -
+            this_step[-2]*flux_term[-2]
+        ) * time_step / (vars_vals[-1] - vars_vals[-2]) +
         sink_term[-1] * time_step
     )
 
@@ -54,9 +58,21 @@ def solver(
     sink_term,
     **kwargs
 ):
-    """ solver accorrding to Lax-Friedrics scheme """
+    """ solver accorrding to Lax-Friedrics scheme
 
-    stability_factor = kwargs.get('stability_factor', 0.8)
+        ∂n/∂t + ∂(fn)/∂x = g
+
+        init_vals: initial values
+        vars_vals: variable values
+        time_span: time span
+        flux_term: flux term (either explicit or function)
+        sink_term: sink term (either explicit or function)
+        kwargs (additional arguments):
+            - stability_factor (float, 0.98): factor for stability
+            - verbosity (int, 0): verbosity level
+    """
+
+    stability_factor = kwargs.get('stability_factor', 0.98)
     verbosity = kwargs.get('verbosity', 0)
 
     vars_vals = term_util(vars_vals, init_vals)
