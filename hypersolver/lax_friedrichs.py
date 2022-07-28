@@ -1,4 +1,4 @@
-""" Lax-Friedrics scheme
+""" Lax-Friedrics finite-difference scheme
 
     ∂n/∂t + ∂(fn)/∂x = g
 
@@ -17,7 +17,8 @@ def next_step(
     flux_term,
     sink_term
 ):
-    """ next step according to Lax-Friedrics scheme """
+    """ next step according to Lax-Friedrics finite-difference scheme
+    """
 
     result = this_step.copy()
 
@@ -58,18 +59,43 @@ def solver(
     sink_term,
     **kwargs
 ):
-    """ solver accorrding to Lax-Friedrics scheme
+    """ solver accorrding to Lax-Friedrics finite-difference scheme
 
-        ∂n/∂t + ∂(fn)/∂x = g
+        equation:   ∂n/∂t + ∂(fn)/∂x = g
 
-        init_vals: initial values
-        vars_vals: variable values
-        time_span: time span
-        flux_term: flux term (either explicit or function)
-        sink_term: sink term (either explicit or function)
-        kwargs (additional arguments):
-            - stability_factor (float, 0.98): factor for stability
-            - verbosity (int, 0): verbosity level
+        init_vals:  initial values of n (np.array)
+        vars_vals:  variable values of x (np.array)
+        time_span:  time span of t (list or tuple)
+        flux_term:  flux term, fn (either explicit or function)
+        sink_term:  sink term, g (either explicit or function)
+
+        additional keyword arguments:
+            - stability_factor (float, 0.98): factor of stability (λ)
+            - verbosity (int, 0): verbosity printing level
+
+        returns:
+        np.array(shape(_time.size, vars_vals.size))
+
+        notes:
+        flux_term and sink_term can be either explicit or functions;
+        if functions, they must be defined as: function(n, x, **kwargs)
+
+        numerics (letting i be vars_vals index, j be time_span index):
+
+        n(j+1, i) = (
+            0.5 * (n(j, i+1) + n(j+1, i-1)) -
+            1.0 * (
+                n(j, x+1)*fn(n(t, i+1)) -
+                n(j, x-1)*fn(n(t, i-1))
+            ) * time_step / (x(i+1) - x(i-1)) +
+            g(j, i) * time_step
+
+        time_step = (
+            stability_factor *
+            (x(i+1) - x(i-1)).min() /
+            (fn(j=0, i)).max()
+        )
+
     """
 
     stability_factor = kwargs.get('stability_factor', 0.98)

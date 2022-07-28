@@ -17,7 +17,7 @@ keywords = [
     "hyperbolic", "PDE", "solver"
 ]
 
-dependencies = ["numpy", "scipy", "numba"]
+dependencies = ["numpy"]
 
 # This is set automatically by flit using `hypersolver.__version__`
 dynamic = ["version"]
@@ -30,7 +30,7 @@ repository = "https://github.com/ngam/hypersolver"
 dev = [
     "pylint", "pytest", "autopep8", "jupyterlab", "pytype",
     "typing", "build", "flake8", "jupyter-book", "ghp-import",
-    "matplotlib",
+    "matplotlib", "scipy", "numba", "numpy", "pandas", "sympy",
 ]
 
 [build-system]

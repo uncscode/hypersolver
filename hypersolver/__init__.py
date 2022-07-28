@@ -16,7 +16,7 @@
 
     Note, fn is the flux across x.
 
-    Usage: solver(...)
+    Usage: solver(n0, x, t, fn, g, **kwargs)
     - solver = hypersolver.select_solver(method)
     - solver = hypersolver.method.solver
 
@@ -28,7 +28,7 @@
 
 __version__ = "0.0.0"
 
-from . import lax_friedrichs
+from hypersolver import lax_friedrichs
 
 
 def select_solver(method="lax_friedrichs"):
