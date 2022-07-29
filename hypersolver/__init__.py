@@ -27,7 +27,7 @@
 """
 
 
-__version__ = "0.0.0"
+__version__ = "0.0.1"
 
 from hypersolver.base import lax_friedrichs, lax_wendroff
 
