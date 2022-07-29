@@ -22,13 +22,14 @@
 
     available method names:
         - "lax_friedrichs" (default) for the Lax-Friedrichs scheme
+        - "lax_wendroff" for the Lax-Wendroff scheme
 
 """
 
 
 __version__ = "0.0.0"
 
-from hypersolver.base import lax_friedrichs
+from hypersolver.base import lax_friedrichs, lax_wendroff
 
 
 def select_solver(method="lax_friedrichs"):
@@ -36,5 +37,7 @@ def select_solver(method="lax_friedrichs"):
 
     if method == "lax_friedrichs":
         return lax_friedrichs.solver
+    if method == "lax_wendroff":
+        return lax_wendroff.solver
 
     raise ValueError("method not supported")
