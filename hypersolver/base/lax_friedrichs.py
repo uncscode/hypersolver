@@ -49,6 +49,7 @@ def next_step(
     return result
 
 
+# pylint: disable=R0801
 def solver(
     init_vals,
     vars_vals,
