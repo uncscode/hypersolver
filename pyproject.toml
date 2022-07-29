@@ -1,6 +1,7 @@
 [project]
 name = "hypersolver"
-description = "hyper---bolic partial differential equations---solver"
+description = "hyper(bolic partial differential equations)solver"
+readme = "readme"
 requires-python = ">=3.7"
 license = {file = "license"}
 authors = [
