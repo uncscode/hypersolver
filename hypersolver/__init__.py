@@ -18,7 +18,7 @@
 
     Usage: solver(n0, x, t, fn, g, **kwargs)
     - solver = hypersolver.select_solver(method)
-    - solver = hypersolver.method.solver
+    - solver = hypersolver.base.method.solver
 
     available method names:
         - "lax_friedrichs" (default) for the Lax-Friedrichs scheme
@@ -28,7 +28,7 @@
 
 __version__ = "0.0.0"
 
-from hypersolver import lax_friedrichs
+from hypersolver.base import lax_friedrichs
 
 
 def select_solver(method="lax_friedrichs"):

@@ -63,10 +63,10 @@ def solver(
 
         equation:   ∂n/∂t + ∂(fn)/∂x = g
 
-        init_vals:  initial values of n (np.array)
+        init_vals:  initial  values of n (np.array)
         vars_vals:  variable values of x (np.array)
         time_span:  time span of t (list or tuple)
-        flux_term:  flux term, fn (either explicit or function)
+        flux_term:  flux term, f (either explicit or function)
         sink_term:  sink term, g (either explicit or function)
 
         additional keyword arguments:
@@ -85,8 +85,8 @@ def solver(
         n(j+1, i) = (
             0.5 * (n(j, i+1) + n(j+1, i-1)) -
             1.0 * (
-                n(j, x+1)*fn(n(t, i+1)) -
-                n(j, x-1)*fn(n(t, i-1))
+                n(j, x+1)*f(n(t, i+1)) -
+                n(j, x-1)*f(n(t, i-1))
             ) * time_step / (x(i+1) - x(i-1)) +
             g(j, i) * time_step
 

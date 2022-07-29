@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from hypersolver.lax_friedrichs import next_step, solver
+from hypersolver.base.lax_friedrichs import next_step, solver
 
 
 def test_next_step():
