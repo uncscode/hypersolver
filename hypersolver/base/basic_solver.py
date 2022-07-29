@@ -1,57 +1,12 @@
-""" Lax-Friedrics finite-difference scheme
-
-    ∂n/∂t + ∂(fn)/∂x = g
-
-    see: hypersolver.lax_friedrichs.solver
+""" shared solver between schemes
 """
-
 import numpy as np
 
 from hypersolver.util import term_util
 
 
-def next_step(
-    this_step,
-    vars_vals,
-    time_step,
-    flux_term,
-    sink_term
-):
-    """ next step according to Lax-Friedrics finite-difference scheme
-    """
-
-    result = this_step.copy()
-
-    result[1:-1] = (
-        0.5 * (this_step[2:] + this_step[:-2]) -
-        1.0 * (
-            this_step[2:]*flux_term[2:] -
-            this_step[:-2]*flux_term[:-2]
-        ) * time_step / (vars_vals[2:] - vars_vals[:-2]) +
-        sink_term[1:-1] * time_step
-    )
-
-    result[0] = (
-        0.5 * (this_step[1] + this_step[0]) -
-        1.0 * (
-            this_step[1]*flux_term[1] - this_step[0]*flux_term[0]
-        ) * time_step / (vars_vals[1] - vars_vals[0]) +
-        sink_term[0] * time_step
-    )
-
-    result[-1] = (
-        0.5 * (this_step[-1] + this_step[-2]) -
-        1.0 * (
-            this_step[-1]*flux_term[-1] -
-            this_step[-2]*flux_term[-2]
-        ) * time_step / (vars_vals[-1] - vars_vals[-2]) +
-        sink_term[-1] * time_step
-    )
-
-    return result
-
-
-def solver(
+def shared_solver(  # pylint: disable=too-many-arguments
+    next_step,
     init_vals,
     vars_vals,
     time_span,
@@ -59,14 +14,14 @@ def solver(
     sink_term,
     **kwargs
 ):
-    """ solver accorrding to Lax-Friedrics finite-difference scheme
+    """ solver accorrding to finite-difference schemes
 
         equation:   ∂n/∂t + ∂(fn)/∂x = g
 
-        init_vals:  initial values of n (np.array)
+        init_vals:  initial  values of n (np.array)
         vars_vals:  variable values of x (np.array)
         time_span:  time span of t (list or tuple)
-        flux_term:  flux term, fn (either explicit or function)
+        flux_term:  flux term, f (either explicit or function)
         sink_term:  sink term, g (either explicit or function)
 
         additional keyword arguments:
@@ -85,8 +40,8 @@ def solver(
         n(j+1, i) = (
             0.5 * (n(j, i+1) + n(j+1, i-1)) -
             1.0 * (
-                n(j, x+1)*fn(n(t, i+1)) -
-                n(j, x-1)*fn(n(t, i-1))
+                n(j, x+1)*f(n(t, i+1)) -
+                n(j, x-1)*f(n(t, i-1))
             ) * time_step / (x(i+1) - x(i-1)) +
             g(j, i) * time_step
 
@@ -131,10 +86,11 @@ def solver(
         )
 
         if verbosity == 1:
-            print(idx, itrs)
+            print(itrs, idx)
 
         if isinstance(flux_term, type(next_step)):
             flux_term = flux_term(sols[itrs], vars_vals, **kwargs)
+            print("true")
         if isinstance(sink_term, type(next_step)):
             sink_term = sink_term(sols[itrs], vars_vals, **kwargs)
         flux_term = term_util(flux_term, sols[itrs])
