@@ -10,11 +10,11 @@
     n is a property of interest,
     x is an independent variable of interest,
     f is speed n moves along x, and
-    g lumps sources and sinks.
+    g lumps sources and sinks
 
-    Functionally, n(x; t), f(x), and g(x; t; n).
+    functionally, n(x; t), f(x), and g(x; t; n)
 
-    Note, fn is the flux across x.
+    note, fn is the flux across x.
 
     Usage:
     >>> from hypersolver import select_solver
