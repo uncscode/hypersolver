@@ -1,16 +1,17 @@
 """ Lax-Wendroff finite-difference scheme """
 
+import typing
 import numpy as np
 
 from hypersolver.util import prep_next_step
 
 
 def lw_next(
-    init_vals: np.ndarray,
-    vars_vals: np.ndarray,
-    flux_term: np.ndarray,
-    sink_term: np.ndarray,
-    stability: np.ndarray = None,
+    init_vals,
+    vars_vals,
+    flux_term,
+    sink_term,
+    stability=None,
 ):
     """ next step according to Lax-Wendroff finite-difference scheme
 
