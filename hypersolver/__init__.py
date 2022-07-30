@@ -18,7 +18,7 @@
 
     Usage:
     >>> from hypersolver import select_solver
-    >>> solver = select_solver(method) 
+    >>> solver = select_solver(method)
     >>> solver(n0, x, t, f, g, **kwargs)
 
     available methods:
