@@ -1,8 +1,5 @@
 """ Lax-Friedrics finite-difference scheme """
 
-import typing
-import numpy as np
-
 from hypersolver.util import prep_next_step
 
 
