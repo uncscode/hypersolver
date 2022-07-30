@@ -2,19 +2,9 @@
 
 import numpy as np
 
-from hypersolver.base.lax_friedrichs import next_step, solver
+from hypersolver import select_solver
 
-
-def test_next_step():
-    """ test: next step according to Lax-Friedrics scheme """
-
-    assert next_step(
-        np.array([1, 2, 3]),
-        np.array([1, 2, 3]),
-        1,
-        np.array([1, 2, 3]),
-        np.array([1, 2, 3])
-    ).shape == np.array([1, 2, 3]).shape
+solver = select_solver("lax_friedrichs")
 
 
 def test_solver():

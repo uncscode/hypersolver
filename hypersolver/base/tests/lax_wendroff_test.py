@@ -2,20 +2,10 @@
 
 import numpy as np
 
-from hypersolver.base.lax_wendroff import next_step, solver
+from hypersolver import select_solver
+solver = select_solver("lax_wendroff")
 
 _array = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-
-
-def test_next_step():
-    """ test: next step according to Lax-Friedrics scheme """
-    assert next_step(
-        _array,
-        _array,
-        1,
-        _array,
-        _array
-    ).shape == _array.shape
 
 
 def test_solver():

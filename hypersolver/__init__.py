@@ -29,15 +29,16 @@
 
 __version__ = "0.0.1"
 
-from hypersolver.base import lax_friedrichs, lax_wendroff
+from hypersolver.base.basic_solver import solver
+
+__support_solvers__ = [
+    "lax_friedrichs",
+    "lax_wendroff",
+]
 
 
 def select_solver(method="lax_friedrichs"):
     """ wrapper function to select solvers """
-
-    if method == "lax_friedrichs":
-        return lax_friedrichs.solver
-    if method == "lax_wendroff":
-        return lax_wendroff.solver
-
-    raise ValueError("method not supported")
+    if method not in __support_solvers__:
+        raise ValueError("method not supported")
+    return solver(method)
