@@ -12,13 +12,12 @@
     f is speed n moves along x, and
     g lumps sources and sinks.
 
-    Functionally, n(x; t), f(x; n), and g(x; t; n).
+    Functionally, n(x; t), f(x), and g(x; t; n).
 
     Note, fn is the flux across x.
 
     Usage: solver(n0, x, t, fn, g, **kwargs)
     - solver = hypersolver.select_solver(method)
-    - solver = hypersolver.base.method.solver
 
     available method names:
         - "lax_friedrichs" (default) for the Lax-Friedrichs scheme
@@ -27,14 +26,14 @@
 """
 
 
-__version__ = "0.0.1"
-
-from hypersolver.base.basic_solver import solver
+__version__ = "0.0.2"
 
 __hyper_solvers__ = [
     "lax_friedrichs",
     "lax_wendroff",
 ]
+
+from hypersolver.base.basic_solver import solver
 
 
 def select_solver(method="lax_friedrichs"):
