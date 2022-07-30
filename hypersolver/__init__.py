@@ -16,12 +16,14 @@
 
     Note, fn is the flux across x.
 
-    Usage: solver(n0, x, t, fn, g, **kwargs)
-    - solver = hypersolver.select_solver(method)
+    Usage:
+    >>> from hypersolver import select_solver
+    >>> solver = select_solver(method) 
+    >>> solver(n0, x, t, fn, g, **kwargs)
 
-    available method names:
-        - "lax_friedrichs" (default) for the Lax-Friedrichs scheme
-        - "lax_wendroff" for the Lax-Wendroff scheme
+    available methods:
+        - "lax_friedrichs" (default)
+        - "lax_wendroff"
 
 """
 
