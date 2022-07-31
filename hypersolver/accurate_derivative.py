@@ -30,12 +30,12 @@ def acc_derivative(func, xvar, nacc):
     """ 1st derivative of a _func wrt _xvar with _nacc accuracy
 
         inputs:
-            _func: function
-            _xvar: variable
-            _nacc: accuracy
+            func: function (np.array)
+            xvar: variable (np.array)
+            nacc: accuracy (integer)
 
         outputs:
-            derivative: array
+            derivative: np.array
 
         NOTES:
             minor bug necessitates repeating calculation if nacc > 2
@@ -50,7 +50,6 @@ def acc_derivative(func, xvar, nacc):
         return axx_derivative
 
     for nax in range(4, nacc + 1, 2):
-        print(nax)
         derivative = _derivative(func, xvar, nax)
         nan_idx = np.isnan(derivative)
         derivative[nan_idx] = axx_derivative[nan_idx]
