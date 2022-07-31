@@ -3,8 +3,8 @@
 import numpy as np
 
 from hypersolver.util import term_util
-from hypersolver.base.lax_friedrichs import lx_next
-from hypersolver.base.lax_wendroff import lw_next
+from hypersolver.lax_friedrichs import lx_next
+from hypersolver.lax_wendroff import lw_next
 
 
 def solver(method):

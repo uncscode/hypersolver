@@ -35,7 +35,7 @@ __hyper_solvers__ = [
     "lax_wendroff",
 ]
 
-from hypersolver.base.basic_solver import solver
+from hypersolver.basic_solver import solver
 
 
 def select_solver(method="lax_friedrichs"):
