@@ -43,6 +43,7 @@ def moc(
         use from scipy.integrate.odeint
     """
     _ = kwargs
+
     # pylint: disable=unused-argument
     # pylint: disable=unused-variable
     def _func(yval, tval):

@@ -8,7 +8,7 @@ from hypersolver.lax_wendroff import lw_next
 from hypersolver.method_of_characteristics import moc
 
 
-def solver(method):
+def solver(method):  # noqa: C901
     """ set the solver """
     if method == "lax_friedrichs":
         next_step = lx_next

@@ -16,5 +16,5 @@ sols_moc_x, sols_moc_y = moc(
 def test_moc():
     """ test: method of characteristics """
 
-    sols_moc_x.shape[-1] == xvars.shape[0]
-    sols_moc_y.shape[-1] == yvars.shape[0]
+    assert sols_moc_x.shape[-1] == xvars.shape[0]
+    assert sols_moc_y.shape[-1] == yvars.shape[0]
