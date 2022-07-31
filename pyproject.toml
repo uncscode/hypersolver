@@ -18,7 +18,7 @@ keywords = [
     "hyperbolic", "PDE", "solver"
 ]
 
-dependencies = ["numpy"]
+dependencies = ["numpy", "scipy"]
 
 # This is set automatically by flit using `hypersolver.__version__`
 dynamic = ["version"]

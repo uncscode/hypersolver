@@ -36,9 +36,8 @@ def lx_next(
             ) +
             g(j,i) * time_step
 
-        if time_step is not provided:
         time_step = (
-            stability_factor *
+            stability *
             (x(i+1) - x(i-1)).min() /
             (f(i)).max()
         )
