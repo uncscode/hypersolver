@@ -1,47 +1,59 @@
-""" nth derivative
+""" 1st derivative, central differencing
 """
 import numpy as np
 from scipy.misc import central_diff_weights
 
 
-def acc_derivative(func, xvar, nacc):
+def _derivative(_func, _xvar, _nacc):
+    """ 1st derivative following central finite differencing
     """
-    Calculates the nth derivative of a function
+    derivative = np.zeros_like(_xvar)
+    derivative[0] = (_func[1] - _func[0])/(_xvar[1] - _xvar[0])
+    derivative[-1] = (_func[-1] - _func[-2])/(_xvar[-1] - _xvar[-2])
+    weights = central_diff_weights(_nacc+1)
 
-    Args:
-        func: function
-        xvar: variable
-        nacc: accuracy
+    for nac, idx in zip(range(2, _nacc + 1, 2), range(_nacc//2-1, -1, -1)):
+        derivative[nac//2:-nac//2] += (
+            weights[idx]*_func[:-nac] /
+            ((_xvar[nac:] - _xvar[:-nac]) / float(nac)) +
+            weights[-idx-1]*_func[nac:] /
+            ((_xvar[nac:] - _xvar[:-nac]) / float(nac)))
 
-    Returns:
-        derivative: array
+    if _nacc > 2:
+        derivative[:_nacc//2] = np.nan
+        derivative[-_nacc//2:] = np.nan
 
-    FIXME: prevent carrying edges, temporary workaround:
-        test2 = nth_derivative(y,x,2)
-        test4 = nth_derivative(y,x,4)
-        test6 = nth_derivative(y,x,6)
-        test8 = nth_derivative(y,x,8)
+    return derivative
 
-        test4[np.isnan(test4)] = test2[np.isnan(test4)]
-        test6[np.isnan(test6)] = test4[np.isnan(test6)]
-        test8[np.isnan(test8)] = test6[np.isnan(test8)]
+
+def acc_derivative(func, xvar, nacc):
+    """ 1st derivative of a _func wrt _xvar with _nacc accuracy
+
+        inputs:
+            _func: function
+            _xvar: variable
+            _nacc: accuracy
+
+        outputs:
+            derivative: array
+
+        NOTES:
+            minor bug necessitates repeating calculation if nacc > 2
     """
     if nacc == 0 or nacc % 2 == 1:
         raise ValueError("n must be positive even")
 
-    derivative = np.zeros_like(xvar)
-    derivative[0] = (func[1] - func[0])/(xvar[1] - xvar[0])
-    derivative[-1] = (func[-1] - func[-2])/(xvar[-1] - xvar[-2])
-    weights = central_diff_weights(nacc+1)
+    axx_derivative = np.zeros_like(xvar)
+    axx_derivative = _derivative(func, xvar, 2)
 
-    for nac, idx in zip(range(2, nacc + 1, 2), range(nacc//2-1, -1, -1)):
-        # fixme: prevent derivative from applying current weights on edges
-        # instead, take previous weights for edges
-        derivative[nac//2:-nac//2] += (
-            weights[idx]*func[:-nac ]/((xvar[nac:] - xvar[:-nac])/float(nac)) +
-            weights[-idx-1]*func[ nac:]/((xvar[nac:] - xvar[:-nac])/float(nac))
-        )
-    if nacc > 2:
-        derivative[:nacc//2] = np.nan
-        derivative[-nacc//2:] = np.nan
+    if nacc == 2:
+        return axx_derivative
+
+    for nax in range(4, nacc + 1, 2):
+        print(nax)
+        derivative = _derivative(func, xvar, nax)
+        nan_idx = np.isnan(derivative)
+        derivative[nan_idx] = axx_derivative[nan_idx]
+        axx_derivative = derivative
+
     return derivative
