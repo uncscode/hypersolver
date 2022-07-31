@@ -3,16 +3,19 @@
 import numpy as np
 
 from hypersolver.util import term_util
-from hypersolver.base.lax_friedrichs import lx_next
-from hypersolver.base.lax_wendroff import lw_next
+from hypersolver.lax_friedrichs import lx_next
+from hypersolver.lax_wendroff import lw_next
+from hypersolver.method_of_characteristics import moc
 
 
-def solver(method):
+def solver(method):  # noqa: C901
     """ set the solver """
     if method == "lax_friedrichs":
         next_step = lx_next
     if method == "lax_wendroff":
         next_step = lw_next
+    if method == "method_of_characteristics":
+        return moc
 
     def _solver(  # pylint: disable=too-many-arguments
         init_vals,
