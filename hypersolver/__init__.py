@@ -33,6 +33,7 @@ __version__ = "0.0.2"
 __hyper_solvers__ = [
     "lax_friedrichs",
     "lax_wendroff",
+    "method_of_characteristics",
 ]
 
 from hypersolver.basic_solver import solver
