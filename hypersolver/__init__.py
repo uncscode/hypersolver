@@ -3,7 +3,7 @@
     hypersolver revolves around solving hyperbolic
     partial differential equations (PDEs) of the form
 
-    ∂n/∂t + ∂(fn)/∂x = ∂n/∂t + f ∂n/∂x - n ∂f/∂x = g
+    ∂n/∂t + ∂(fn)/∂x = ∂n/∂t + f ∂n/∂x + n ∂f/∂x = g
 
     where
 
