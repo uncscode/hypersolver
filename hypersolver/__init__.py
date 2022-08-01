@@ -3,7 +3,7 @@
     hypersolver revolves around solving hyperbolic
     partial differential equations (PDEs) of the form
 
-    ∂n/∂t + ∂(fn)/∂x = ∂n/∂t + f ∂n/∂x - n ∂f/∂x = g
+    ∂n/∂t + ∂(fn)/∂x = ∂n/∂t + f ∂n/∂x + n ∂f/∂x = g
 
     where
 
@@ -23,7 +23,8 @@
 
     available methods:
         - "lax_friedrichs" (default)
-        - "lax_wendroff"
+        - "lax_wendroff" (still unstable, wip)
+        - "method_of_characteristics" (experimental)
 
 """
 
@@ -36,11 +37,11 @@ __hyper_solvers__ = [
     "method_of_characteristics",
 ]
 
-from hypersolver.basic_solver import solver
+from hypersolver.step_solver import solver_
 
 
-def select_solver(method="lax_friedrichs"):
+def solver(*args, method="lax_friedrichs", **kwargs):
     """ wrapper function to select solvers """
     if method not in __hyper_solvers__:
         raise ValueError("method not supported")
-    return solver(method)
+    return solver_(*args, method=method, **kwargs)

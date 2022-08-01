@@ -1,23 +1,25 @@
 """ shared solver between schemes
 """
+
 import numpy as np
 
 from hypersolver.util import term_util
 from hypersolver.lax_friedrichs import lx_next
 from hypersolver.lax_wendroff import lw_next
-from hypersolver.method_of_characteristics import moc
+from hypersolver.method_of_characteristics import moc_next
 
 
-def solver(method):  # noqa: C901
+def solver_(*args, **kwargs):
     """ set the solver """
+    method = kwargs.get("method", "lax_friedrichs")
     if method == "lax_friedrichs":
         next_step = lx_next
-    if method == "lax_wendroff":
+    elif method == "lax_wendroff":
         next_step = lw_next
-    if method == "method_of_characteristics":
-        return moc
+    else:
+        next_step = moc_next
 
-    def _solver(  # pylint: disable=too-many-arguments
+    def _solver_(
         init_vals,
         vars_vals,
         time_span,
@@ -39,11 +41,15 @@ def solver(method):  # noqa: C901
         flux_term = term_util(flux_term, init_vals)
         sink_term = term_util(sink_term, init_vals)
 
-        time_step = (
-            stability_factor *
-            np.diff(vars_vals).min() /
-            np.abs(flux_term).max()
-        )
+        stability_factor, time_step = (stability_factor,
+                                       stability_factor *
+                                       np.diff(vars_vals).min() /
+                                       np.abs(flux_term).max()
+                                       ) if method in [
+            "lax_friedrichs", "lax_wendroff"
+        ] else (
+            np.array((time_span[-1] - time_span[0])/5.0),
+            np.array((time_span[-1] - time_span[0])/5.0))
 
         tidx = np.arange(time_span[0], time_span[-1]+time_step, time_step)
         sols = np.zeros((tidx.size, init_vals.size))
@@ -74,4 +80,4 @@ def solver(method):  # noqa: C901
 
         return sols
 
-    return _solver
+    return _solver_(*args, **kwargs)
