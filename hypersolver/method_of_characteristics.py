@@ -38,7 +38,7 @@ def moc_next(
 
         numerics
         --------
-        use from scipy.integrate.odeint
+        use scipy.integrate.odeint
     """
 
     # pylint: disable=unused-argument
