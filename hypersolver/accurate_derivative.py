@@ -75,11 +75,11 @@ def acc_derivative(func, xvar, nacc):
     if nacc <= 0 or nacc % 2 == 1:
         raise ValueError("n must be positive even")
 
-    axx_derivative = np.zeros_like(xvar)
-    axx_derivative = _derivative(func, xvar, 2)
-
     if nacc < 6:
         return acc4_derivative(func, xvar, nacc)
+
+    axx_derivative = np.zeros_like(xvar)
+    axx_derivative = _derivative(func, xvar, 2)
 
     for nax in range(6, nacc + 1, 2):
         derivative = _derivative(func, xvar, nax)
