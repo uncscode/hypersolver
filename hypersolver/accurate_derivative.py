@@ -10,7 +10,6 @@ weights[2, -3:] = np.array([-1/60, 3/20, -3/4])
 weights[3, -4:] = np.array([1/280, -4/105, 1/5, -4/5])
 
 
-
 def _derivative(_func, _xvar, _nacc):
     """ 1st derivative following central finite differencing
     """
@@ -73,16 +72,16 @@ def acc_derivative(func, xvar, nacc):
         NOTES:
             minor bug necessitates repeating calculation if nacc > 2
     """
-    if nacc == 0 or nacc % 2 == 1:
+    if nacc <= 0 or nacc % 2 == 1:
         raise ValueError("n must be positive even")
 
     axx_derivative = np.zeros_like(xvar)
     axx_derivative = _derivative(func, xvar, 2)
 
-    if nacc == 2:
-        return axx_derivative
+    if nacc < 6:
+        return acc4_derivative(func, xvar, nacc)
 
-    for nax in range(4, nacc + 1, 2):
+    for nax in range(6, nacc + 1, 2):
         derivative = _derivative(func, xvar, nax)
         nan_idx = np.isnan(derivative)
         derivative[nan_idx] = axx_derivative[nan_idx]
