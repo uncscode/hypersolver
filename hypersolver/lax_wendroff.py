@@ -53,9 +53,9 @@ def lw_next(
         1.0 * time_step / (vars_vals[2:] - vars_vals[:-2]) * (
             init_vals[2:] * flux_term[2:] -
             init_vals[:-2] * flux_term[:-2]
-        ) + (time_step / (vars_vals[2:] - vars_vals[:-2])/2)**2 * (
+        ) + 0.5 * (time_step / (vars_vals[2:] - vars_vals[:-2])/2.0)**2.0 * (
             init_vals[:-2] * flux_term[:-2] -
-            2 * init_vals[1:-1] * flux_term[1:-1] +
+            2.0 * init_vals[1:-1] * flux_term[1:-1] +
             init_vals[2:] * flux_term[2:]
         ) + sink_term[1:-1] * time_step
     )
@@ -65,7 +65,7 @@ def lw_next(
         1.0 * time_step / (vars_vals[1] - vars_vals[0]) * (
             init_vals[1] * flux_term[1] -
             init_vals[0] * flux_term[0]
-        ) + (time_step / (vars_vals[1] - vars_vals[0])/1)**2 * (
+        ) + 0.5 * (time_step / (vars_vals[1] - vars_vals[0])/1.0)**2.0 * (
             0.0 * init_vals[0] * flux_term[0] -
             2.0 * init_vals[0] * flux_term[0] +
             1.0 * init_vals[1] * flux_term[1]
@@ -77,7 +77,7 @@ def lw_next(
         1.0 * time_step / (vars_vals[-1] - vars_vals[-2]) * (
             init_vals[-1] * flux_term[-1] -
             init_vals[-2] * flux_term[-2]
-        ) + (time_step / (vars_vals[-1] - vars_vals[-2])/1)**2 * (
+        ) + 0.5 * (time_step / (vars_vals[-1] - vars_vals[-2])/1.0)**2.0 * (
             1.0 * init_vals[-2] * flux_term[-2] -
             2.0 * init_vals[-1] * flux_term[-1] +
             0.0 * init_vals[-1] * flux_term[-1]

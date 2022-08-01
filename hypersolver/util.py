@@ -39,6 +39,9 @@ def prep_next_step(
     init_vals,
 ):
     """ prep routine
+
+        this utility prepares for next_step
+        by calculating tim_step and copying next_vals
     """
     if stability is None:
         stability = np.array([0.98], dtype=np.float32)

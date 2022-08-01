@@ -1,3 +1,25 @@
 hyper(bolic partial differential equations)solver
 
 help(hypersolver) for use info, etc.
+
+---
+
+hypersolver revolves around solving hyperbolic
+partial differential equations (PDEs) of the form
+
+∂n/∂t + ∂(fn)/∂x = ∂n/∂t + f ∂n/∂x - n ∂f/∂x = g
+
+where
+
+n is a property of interest,
+x is an independent variable of interest,
+f is speed n moves along x, and
+g lumps sources and sinks
+
+functionally, n(x; t), f(x), and g(x; t; n)
+
+note, fn is the flux across x
+
+---
+
+contributions to expand functionality are welcome!

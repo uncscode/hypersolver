@@ -1,20 +1,25 @@
 """ shared solver between schemes
 """
+
 import numpy as np
 
 from hypersolver.util import term_util
 from hypersolver.lax_friedrichs import lx_next
 from hypersolver.lax_wendroff import lw_next
+from hypersolver.method_of_characteristics import moc_next
 
 
-def solver(method):
+def solver_(*args, **kwargs):
     """ set the solver """
+    method = kwargs.get("method", "lax_friedrichs")
     if method == "lax_friedrichs":
         next_step = lx_next
     if method == "lax_wendroff":
         next_step = lw_next
+    if method == "method_of_characteristics":
+        next_step = moc_next
 
-    def _solver(  # pylint: disable=too-many-arguments
+    def _solver_(  # pylint: disable=too-many-arguments
         init_vals,
         vars_vals,
         time_span,
@@ -40,7 +45,12 @@ def solver(method):
             stability_factor *
             np.diff(vars_vals).min() /
             np.abs(flux_term).max()
-        )
+        ) if method in [
+            "lax_friedrichs", "lax_wendroff"
+        ] else np.array((time_span[-1] - time_span[0])/5.0)
+
+        if method == "method_of_characteristics":
+            stability_factor = time_step
 
         tidx = np.arange(time_span[0], time_span[-1]+time_step, time_step)
         sols = np.zeros((tidx.size, init_vals.size))
@@ -71,4 +81,4 @@ def solver(method):
 
         return sols
 
-    return _solver
+    return _solver_(*args, **kwargs)

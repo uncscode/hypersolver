@@ -23,7 +23,8 @@
 
     available methods:
         - "lax_friedrichs" (default)
-        - "lax_wendroff"
+        - "lax_wendroff" (still unstable, wip)
+        - "method_of_characteristics" (experimental)
 
 """
 
@@ -33,13 +34,14 @@ __version__ = "0.0.4"
 __hyper_solvers__ = [
     "lax_friedrichs",
     "lax_wendroff",
+    "method_of_characteristics",
 ]
 
-from hypersolver.basic_solver import solver
+from hypersolver.step_solver import solver_
 
 
-def select_solver(method="lax_friedrichs"):
+def solver(*args, method="lax_friedrichs", **kwargs):
     """ wrapper function to select solvers """
     if method not in __hyper_solvers__:
         raise ValueError("method not supported")
-    return solver(method)
+    return solver_(*args, method=method, **kwargs)
