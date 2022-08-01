@@ -2,6 +2,7 @@
 """
 import numpy as np
 from scipy.integrate import odeint
+from scipy.interpolate import interp1d
 
 from hypersolver.accurate_derivative import acc_derivative
 
@@ -66,4 +67,11 @@ def moc_next(
     tspan = np.linspace(0, time_step, 10)
     results = odeint(_func, yval0, tspan, ml=2, mu=2)
 
-    return (results[:, ::2], results[:, 1::2])
+    fill = interp1d(
+        results[-1, ::2],
+        results[-1, 1::2],
+        fill_value=(0.0, 0.0),
+        bounds_error=False,
+        kind='cubic')
+
+    return fill(vars_vals)

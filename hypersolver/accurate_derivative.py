@@ -41,8 +41,6 @@ def acc4_derivative(_func, _xvar, _nacc=4):
 
     for nac, idx in zip(range(2, _nacc + 1, 2), range(_nacc//2)):
 
-        print(nac//2, -nac//2-1, nac, -nac-1)
-
         derivative[nac//2] += (
             weights[nac//2-1, -idx-1]*(_func[0] - _func[nac]) /
             ((_xvar[nac] - _xvar[0]) / float(nac)))
