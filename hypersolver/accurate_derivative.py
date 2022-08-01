@@ -81,7 +81,7 @@ def acc_derivative(func, xvar, nacc):
     axx_derivative = np.zeros_like(xvar)
     axx_derivative = _derivative(func, xvar, 2)
 
-    for nax in range(6, nacc + 1, 2):
+    for nax in range(4, nacc + 1, 2):
         derivative = _derivative(func, xvar, nax)
         nan_idx = np.isnan(derivative)
         derivative[nan_idx] = axx_derivative[nan_idx]
