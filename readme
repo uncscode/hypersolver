@@ -23,3 +23,5 @@ note, fn is the flux across x
 ---
 
 contributions to expand functionality are welcome!
+
+e.g. allowing f(x) to be f(x; n) is ~easy
