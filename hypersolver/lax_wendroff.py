@@ -29,6 +29,16 @@ def lw_next(
         numerics
         --------
         n(j+1, i) = (
+            n(j,i) +
+            time_step * ( -(fn)x + g ) + # first term (order)
+            0.5 * (time_step)**2 * (
+                -fx (-(fn)x + g) - f(-(fn)xx + gx) + gt) # second term (order)
+            )
+        )
+
+        # FIXME: wrong implementation for now
+        # TODO: to be revisited
+        n(j+1, i) = (
             n(j,i) -
             time_step / (x(i+1) - x(i-1)) * (
                 n(j,i+1) * f(i+1) -
@@ -53,7 +63,7 @@ def lw_next(
         1.0 * time_step / (vars_vals[2:] - vars_vals[:-2]) * (
             init_vals[2:] * flux_term[2:] -
             init_vals[:-2] * flux_term[:-2]
-        ) + 0.5 * (time_step / (vars_vals[2:] - vars_vals[:-2])/2.0)**2.0 * (
+        ) + 0.5 * (time_step / ((vars_vals[2:] - vars_vals[:-2])/2.0))**2.0 * (
             init_vals[:-2] * flux_term[:-2] -
             2.0 * init_vals[1:-1] * flux_term[1:-1] +
             init_vals[2:] * flux_term[2:]
@@ -65,7 +75,7 @@ def lw_next(
         1.0 * time_step / (vars_vals[1] - vars_vals[0]) * (
             init_vals[1] * flux_term[1] -
             init_vals[0] * flux_term[0]
-        ) + 0.5 * (time_step / (vars_vals[1] - vars_vals[0])/1.0)**2.0 * (
+        ) + 0.5 * ((time_step / (vars_vals[1] - vars_vals[0])/1.0))**2.0 * (
             0.0 * init_vals[0] * flux_term[0] -
             2.0 * init_vals[0] * flux_term[0] +
             1.0 * init_vals[1] * flux_term[1]
@@ -77,7 +87,7 @@ def lw_next(
         1.0 * time_step / (vars_vals[-1] - vars_vals[-2]) * (
             init_vals[-1] * flux_term[-1] -
             init_vals[-2] * flux_term[-2]
-        ) + 0.5 * (time_step / (vars_vals[-1] - vars_vals[-2])/1.0)**2.0 * (
+        ) + 0.5 * ((time_step / (vars_vals[-1] - vars_vals[-2])/1.0))**2.0 * (
             1.0 * init_vals[-2] * flux_term[-2] -
             2.0 * init_vals[-1] * flux_term[-1] +
             0.0 * init_vals[-1] * flux_term[-1]
