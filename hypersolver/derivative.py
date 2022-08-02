@@ -1,4 +1,8 @@
-""" derivative
+""" derivative: calculating derivatives central differencing
+
+    available functions:
+        - ord1_acc2: order=1, accuracy=2
+        - ord2_acc2: order=2, accuracy=2
 """
 
 from hypersolver.util import xnp as np

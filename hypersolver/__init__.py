@@ -63,15 +63,15 @@ __hyper_solver_types__ = [
 def solver(
     *args,
     method="lax_friedrichs",
-    backend=os.environ.get("BACKEND", "numpy"),
-    verbosity=os.environ.get("VERBOSITY", "0"),
+    backend=os.environ.get("HS_BACKEND", "numpy"),
+    verbosity=os.environ.get("HS_VERBOSITY", "0"),
     solver_type="unsplit",
     **kwargs
 ):
     """ wrapper function to select solvers """
 
-    os.environ["BACKEND"] = str(backend)
-    os.environ["VERBOSITY"] = str(verbosity)
+    os.environ["HS_BACKEND"] = str(backend)
+    os.environ["HS_VERBOSITY"] = str(verbosity)
 
     if method not in __hyper_methods__ or \
             solver_type not in __hyper_solver_types__:
@@ -84,6 +84,5 @@ def solver(
     return solver_upde(
         *args,
         method=method,
-        verbosity=verbosity,
         **kwargs
     )

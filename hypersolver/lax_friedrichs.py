@@ -6,7 +6,9 @@ from hypersolver.derivative import ord1_acc2
 
 
 def lx_init(init_vals):
-    """ init
+    """ initialize the array
+
+        pad the array with the prescribed first and last values
     """
 
     return np.pad(

@@ -1,5 +1,5 @@
-""" runge-kutta
-"""
+""" Runge-Kutta methods for ode solvers """
+
 from hypersolver.util import term_util, func_util
 
 

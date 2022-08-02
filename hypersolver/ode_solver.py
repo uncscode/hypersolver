@@ -1,5 +1,4 @@
-""" ode solver
-"""
+""" customized simple ode solvers for use in split methods"""
 
 import os
 from hypersolver.util import xnp as np
@@ -19,7 +18,7 @@ def solver_(*args, **kwargs):
         raise ValueError("method not supported")
 
     def _solver_(init_vals, vars_vals, time_span, func_term, **kwargs):
-        """ solver """
+        """ solver for the ode methods """
 
         vars_vals = term_util(vars_vals, init_vals)
 
@@ -41,7 +40,7 @@ def solver_(*args, **kwargs):
             next_vals = next_step(
                 sols[itrs, :], vars_vals, func_term, time_step, **kwargs)
 
-            if os.environ.get("VERBOSITY", "0") == "1":
+            if os.environ.get("HS_VERBOSITY", "0") == "1":
                 print(itrs)
 
             itrs += 1

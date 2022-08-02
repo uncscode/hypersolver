@@ -1,12 +1,12 @@
-""" shared solver between schemes
-"""
+""" shared solver between schemes """
+
 import os
 from hypersolver.util import xnp as np
 from hypersolver.util import term_util, func_util, time_step_util
 from hypersolver.lax_friedrichs import lx_next
 from hypersolver.lax_wendroff import lw_next
 # pytype: disable=import-error
-if os.environ.get("BACKEND", "numpy") == "jax":
+if os.environ.get("HS_BACKEND", "numpy") == "jax":
     import jax  # pylint: disable=import-error
 
 
@@ -17,7 +17,7 @@ def solver_(*args, **kwargs):
 
     next_step = lx_next if method == "lax_friedrichs" else lw_next
 
-    if os.environ.get("BACKEND", "numpy") == "jax":
+    if os.environ.get("HS_BACKEND", "numpy") == "jax":
         next_step = jax.jit(next_step)
 
     def _prep_solver(
@@ -71,7 +71,7 @@ def solver_(*args, **kwargs):
             next_vals = next_step(
                 sols[itrs, :], vars_vals, _flux_term, _sink_term, stability_factor)
 
-            if os.environ.get("VERBOSITY", "0") == "1":
+            if os.environ.get("HS_VERBOSITY", "0") == "1":
                 print(itrs)
 
             _flux_term = term_util(

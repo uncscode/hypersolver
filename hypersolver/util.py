@@ -1,13 +1,14 @@
 """ utilities for hypersolver """
+
 import os
 import numpy as np
 # pytype: disable=import-error
-if os.environ.get("BACKEND", "numpy") == "jax":
+if os.environ.get("HS_BACKEND", "numpy") == "jax":
     import jax.numpy as jnp  # pylint: disable=import-error
 
 
-def set_xnp(backend=os.environ.get("BACKEND", "numpy")):
-    """ wrapper to set select numpy """
+def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
+    """ wrapper to set select numpy or jax.numpy """
 
     return jnp if backend == "jax" else np
 
@@ -18,7 +19,7 @@ xnp = set_xnp()
 def term_util(term, orig):
     """ regularize term
 
-        this utility "regularizes" the input "term"
+        utility to "regularize" the input "term"
         by making it look like the "orig" input
     """
 
@@ -29,15 +30,12 @@ def term_util(term, orig):
 
 
 def func_util(func, _vals, _vars, **kwargs):
-    """ evaluate function if one
-    """
+    """ evaluate function if one """
     return func(_vals, _vars, **kwargs) if callable(func) else func
 
 
 def time_step_util(vars_vals, flux_term, stability):
-    """ default time_step
-
-        this utility calculates the default time_step
+    """ utility to calculate the default time_step
     """
 
     if stability is None:
