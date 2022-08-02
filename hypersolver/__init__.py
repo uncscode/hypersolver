@@ -12,24 +12,31 @@
     f is speed n moves along x, and
     g lumps sources and sinks
 
-    functionally, n(x; t), f(x), and g(x; t; n)
+    functionally, n(x; t), f(x), and g(n; x; t)
 
     note, fn is the flux across x.
 
     Usage:
-    >>> from hypersolver import select_solver
-    >>> solver = select_solver(method)
+    >>> from hypersolver import solver
     >>> solver(n0, x, t, f, g, **kwargs)
+    >>> # kwargs include "method", "backend", etc.
 
     available methods:
         - "lax_friedrichs" (default)
         - "lax_wendroff" (still unstable, wip)
         - "method_of_characteristics" (experimental)
 
+    available backends:
+        - "numpy" (default)
+        - "jax" (experimental)
 """
 
+import os
 
-__version__ = "0.0.4"
+from hypersolver.step_solver import solver_
+
+
+__version__ = "0.0.5"
 
 __hyper_solvers__ = [
     "lax_friedrichs",
@@ -37,11 +44,17 @@ __hyper_solvers__ = [
     "method_of_characteristics",
 ]
 
-from hypersolver.step_solver import solver_
 
-
-def solver(*args, method="lax_friedrichs", **kwargs):
+def solver(
+    *args,
+    method="lax_friedrichs",
+    backend=os.environ.get("BACKEND", "numpy"),
+    **kwargs
+):
     """ wrapper function to select solvers """
+
+    os.environ["BACKEND"] = backend
+
     if method not in __hyper_solvers__:
         raise ValueError("method not supported")
     return solver_(*args, method=method, **kwargs)

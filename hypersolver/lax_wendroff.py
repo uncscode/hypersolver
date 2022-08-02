@@ -1,6 +1,7 @@
 """ Lax-Wendroff finite-difference scheme """
 
-from hypersolver.util import prep_next_step
+from hypersolver.util import time_step_util
+from hypersolver.derivative import ord1_acc2, ord2_acc2
 
 
 def lw_next(
@@ -10,13 +11,13 @@ def lw_next(
     sink_term,
     stability=None,
 ):
-    """ next step according to Lax-Wendroff finite-difference scheme
+    """ next step according to Lax-Friedrics finite-difference scheme
 
         ∂n/∂t + ∂(fn)/∂x = g
 
         inputs
         ------
-        init_step:  n
+        init_vals:  n
         vars_vals:  x
         flux_term:  f
         sink_term:  g
@@ -28,70 +29,31 @@ def lw_next(
 
         numerics
         --------
-        n(j+1, i) = (
-            n(j,i) +
-            time_step * ( -(fn)x + g ) + # first term (order)
-            0.5 * (time_step)**2 * (
-                -fx (-(fn)x + g) - f(-(fn)xx + gx) + gt) # second term (order)
-            )
-        )
+        n(j+1) =
+            n(j) +
+            Δt (g - Δ(fn)/Δx)(j) +
+            0.5 (Δt)^2 (
+                - Δf/Δx (-Δ(fn)/Δx + g)
+                - f(-Δ(fn)^2/Δx^2 + Δg/Δx)
+                + Δg/Δt
+            )(j)
 
-        # FIXME: wrong implementation for now
-        # TODO: to be revisited
-        n(j+1, i) = (
-            n(j,i) -
-            time_step / (x(i+1) - x(i-1)) * (
-                n(j,i+1) * f(i+1) -
-                n(j,i-1) * f(i-1)
-            ) + 0.5 * (time_step / (x(i+1) - x(i-1))/2)**2 * (
-                n(j,i-1) * f(i-1) - 2 n(j,i) * f(i) + n(j,i+1) * f(i+1)
-            ) +
-            g(j,i) * time_step
-
-        time_step = (
-            stability *
-            (x(i+1) - x(i-1)).min() /
-            (f(i)).max()
-        )
+        Δt ≤ λΔx/f ∀ x
+        Δ(s)/Δx is first-order derivative with accuracy of 2
+        Δ(s)^/Δx^2 is second-order derivative with accuracy of 2
+        n(j, i) =? (n(j, i-1) + n(j, i+1))/2
     """
 
-    (time_step, next_vals) = prep_next_step(
-        stability, vars_vals, flux_term, init_vals)
+    time_step = time_step_util(vars_vals, flux_term, stability)
 
-    next_vals[1:-1] = (
-        init_vals[1:-1] -
-        1.0 * time_step / (vars_vals[2:] - vars_vals[:-2]) * (
-            init_vals[2:] * flux_term[2:] -
-            init_vals[:-2] * flux_term[:-2]
-        ) + 0.5 * (time_step / ((vars_vals[2:] - vars_vals[:-2])/2.0))**2.0 * (
-            init_vals[:-2] * flux_term[:-2] -
-            2.0 * init_vals[1:-1] * flux_term[1:-1] +
-            init_vals[2:] * flux_term[2:]
-        ) + sink_term[1:-1] * time_step
+    return init_vals + time_step * (
+        sink_term[1] - ord1_acc2(init_vals*flux_term, vars_vals)
+    ) + 0.5 * time_step**2 * (
+        -1.0 * ord1_acc2(flux_term, vars_vals)*(
+            -1.0 * ord1_acc2(init_vals*flux_term, vars_vals) +
+            sink_term[1]
+        ) - flux_term * (
+            -1.0*ord2_acc2(flux_term, vars_vals) +
+            ord1_acc2(sink_term[1], vars_vals)
+        ) + (sink_term[1] - sink_term[0])/time_step
     )
-
-    next_vals[0] = (
-        init_vals[0] -
-        1.0 * time_step / (vars_vals[1] - vars_vals[0]) * (
-            init_vals[1] * flux_term[1] -
-            init_vals[0] * flux_term[0]
-        ) + 0.5 * ((time_step / (vars_vals[1] - vars_vals[0])/1.0))**2.0 * (
-            0.0 * init_vals[0] * flux_term[0] -
-            2.0 * init_vals[0] * flux_term[0] +
-            1.0 * init_vals[1] * flux_term[1]
-        ) + sink_term[0] * time_step
-    )
-
-    next_vals[-1] = (
-        init_vals[-1] -
-        1.0 * time_step / (vars_vals[-1] - vars_vals[-2]) * (
-            init_vals[-1] * flux_term[-1] -
-            init_vals[-2] * flux_term[-2]
-        ) + 0.5 * ((time_step / (vars_vals[-1] - vars_vals[-2])/1.0))**2.0 * (
-            1.0 * init_vals[-2] * flux_term[-2] -
-            2.0 * init_vals[-1] * flux_term[-1] +
-            0.0 * init_vals[-1] * flux_term[-1]
-        ) + sink_term[-1] * time_step
-    )
-
-    return next_vals
