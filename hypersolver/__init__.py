@@ -23,8 +23,8 @@
 
     available methods:
         - "lax_friedrichs" (default)
-        - "lax_wendroff" (still unstable, wip)
-        - "method_of_characteristics" (experimental)
+        - "lax_wendroff"
+        - "method_of_characteristics" (broken, experimental)
 
     available backends:
         - "numpy" (default)
