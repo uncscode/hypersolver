@@ -1,4 +1,4 @@
-""" runga-kutta
+""" runge-kutta
 """
 from hypersolver.util import term_util, func_util
 
