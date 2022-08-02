@@ -12,7 +12,7 @@
     f is speed n moves along x, and
     g lumps sources and sinks
 
-    functionally, n(x; t), f(x), and g(n; x; t)
+    functionally, n(x; t), f(x), and g(n; x)
 
     note, fn is the flux across x.
 
