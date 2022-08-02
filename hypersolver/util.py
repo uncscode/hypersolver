@@ -1,7 +1,8 @@
 """ utilities for hypersolver """
 import os
 import numpy as np
-import jax.numpy as jnp
+if os.environ.get("BACKEND", "numpy") == "jax":
+    import jax.numpy as jnp
 
 
 def set_xnp(backend=os.environ.get("BACKEND", "numpy")):
