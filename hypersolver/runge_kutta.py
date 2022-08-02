@@ -11,6 +11,23 @@ def rk2_next(
     **kwargs
 ):
     """ 2nd order Runge-Kutta method
+
+        dn/dt = f(n, x)
+
+        inputs:
+        -------
+        init_vals: n
+        vars_vals: x
+        func_term: f
+        time_step: Δt
+
+        outputs:
+        --------
+        next_vals: n
+
+        numerics:
+        ---------
+        - next_vals: n + Δt*f(n + Δt/2*f(n, x))
     """
 
     step1 = init_vals + 0.5 * time_step * term_util(

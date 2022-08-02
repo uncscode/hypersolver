@@ -7,7 +7,7 @@ from hypersolver.runge_kutta import rk2_next
 
 
 def solver_(*args, **kwargs):
-    """ solver """
+    """ ode solver """
 
     method = kwargs.get("method", "rk2")
     nsteps = kwargs.get("nsteps")
@@ -18,7 +18,27 @@ def solver_(*args, **kwargs):
         raise ValueError("method not supported")
 
     def _solver_(init_vals, vars_vals, time_span, func_term, **kwargs):
-        """ solver for the ode methods """
+        """ solver for the ode methods
+
+            function to loop over `time_step`s using ode schemes
+
+            dn/dt = f(n, x)
+
+            inputs:
+            -------
+            init_vals: n
+            vars_vals: x
+            time_span: (start, end)
+            func_term: f
+
+            outputs:
+            --------
+            sols: n (t, x)
+
+            methods:
+            --------
+            - rk2:  hypersolver.runge_kutta.rk2_next
+        """
 
         vars_vals = term_util(vars_vals, init_vals)
 

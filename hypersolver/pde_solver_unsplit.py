@@ -23,7 +23,7 @@ def solver_(*args, **kwargs):
     def _prep_solver(
         init_vals, vars_vals, time_span, flux_term, sink_term, **kwargs
     ):
-        """ prep solver """
+        """ prep solver's time_step and various inputs """
 
         stability_factor = kwargs.get('stability_factor', 0.98)
 
@@ -57,7 +57,29 @@ def solver_(*args, **kwargs):
         )
 
     def _solver_(init_vals, vars_vals, time_span, flux_term, sink_term, **kwargs):
-        """ solver accorrding to finite-difference schemes """
+        """ solver accorrding to finite-difference scheme
+
+            function to loop over `time_step`s using the pde schemes
+
+            ∂n/∂t + ∂(fn)/∂x = g
+
+            inputs:
+            -------
+            init_vals: n
+            vars_vals: x
+            time_span: (start, end)
+            flux_term: f
+            sink_term: g
+
+            outputs:
+            --------
+            sols: n (t, x)
+
+            methods:
+            --------
+            - lax_friedrichs:   hypersolver.lax_friedrichs.lx_next
+            - lax_wendroff:     hypersolver.lax_wendroff.lw_next
+        """
 
         (
             tidx, itrs, sols, stability_factor,
