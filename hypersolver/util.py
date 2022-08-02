@@ -8,6 +8,7 @@ if os.environ.get("BACKEND", "numpy") == "jax":
 
 def set_xnp(backend=os.environ.get("BACKEND", "numpy")):
     """ wrapper to set select numpy """
+
     return jnp if backend == "jax" else np
 
 
@@ -20,8 +21,10 @@ def term_util(term, orig):
         this utility "regularizes" the input "term"
         by making it look like the "orig" input
     """
+
     if isinstance(term, xnp.ndarray) and xnp.array(term).shape == orig.shape:
         return term
+
     return xnp.full_like(orig, term)
 
 
@@ -36,8 +39,10 @@ def time_step_util(vars_vals, flux_term, stability):
 
         this utility calculates the default time_step
     """
+
     if stability is None:
         stability = xnp.array([0.98])
+
     return xnp.array(stability) * xnp.array(
         vars_vals[1:] - vars_vals[:1]
     ).min() / xnp.array(flux_term).max()

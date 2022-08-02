@@ -5,8 +5,8 @@ from hypersolver.util import xnp as np
 
 
 def ord1_acc2(_func, _xvar):
-    """ central differencing: order=1, accuracy=2
-    """
+    """ central differencing: order=1, accuracy=2 """
+
     _func, _xvar = np.array(_func), np.array(_xvar)
 
     _derivative = (
@@ -24,8 +24,8 @@ def ord1_acc2(_func, _xvar):
 
 
 def ord2_acc2(_func, _xvar):
-    """ central differencing: order=2, accuracy=2
-    """
+    """ central differencing: order=2, accuracy=2 """
+
     _func, _xvar = np.array(_func), np.array(_xvar)
 
     _derivative = (

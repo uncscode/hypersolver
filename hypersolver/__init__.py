@@ -33,7 +33,7 @@
 
 import os
 
-from hypersolver.step_solver import solver_
+from hypersolver.pde_solver_unsplit import solver_
 
 
 __version__ = "0.0.5"

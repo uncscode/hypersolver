@@ -8,6 +8,7 @@ from hypersolver.derivative import ord1_acc2
 def lx_init(init_vals):
     """ init
     """
+
     return np.pad(
         init_vals,
         (1, 1),
@@ -53,5 +54,6 @@ def lx_next(
     time_step = time_step_util(vars_vals, flux_term, stability)
 
     _init_vals = lx_init(0.5 * (init_vals[2:] + init_vals[:-2]))
+
     return _init_vals - time_step * (
         ord1_acc2(init_vals*flux_term, vars_vals) - sink_term)
