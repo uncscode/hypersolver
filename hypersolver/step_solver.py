@@ -6,7 +6,7 @@ from hypersolver.util import term_util, func_util, time_step_util
 from hypersolver.lax_friedrichs import lx_next
 from hypersolver.lax_wendroff import lw_next
 if os.environ.get("BACKEND", "numpy") == "jax":
-    import jax
+    import jax  # pylint: disable=import-error
 
 
 def solver_(*args, **kwargs):

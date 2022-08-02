@@ -2,7 +2,7 @@
 import os
 import numpy as np
 if os.environ.get("BACKEND", "numpy") == "jax":
-    import jax.numpy as jnp
+    import jax.numpy as jnp  # pylint: disable=import-error
 
 
 def set_xnp(backend=os.environ.get("BACKEND", "numpy")):
