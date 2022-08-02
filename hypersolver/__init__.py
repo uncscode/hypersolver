@@ -54,7 +54,10 @@ __hyper_methods__ = [
     "rk2",
 ]
 
-__hyper_solver_types__ = ["unsplit", "split",]
+__hyper_solver_types__ = [
+    "unsplit",
+    "split",
+]
 
 
 def solver(
