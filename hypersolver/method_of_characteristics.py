@@ -1,10 +1,11 @@
 """ method of charactersistics
 """
+
 import numpy as np
 from scipy.integrate import odeint
 from scipy.interpolate import interp1d
 
-from hypersolver.accurate_derivative import acc_derivative
+from hypersolver.derivative import ord1_acc2
 
 
 def moc_next(
@@ -56,8 +57,7 @@ def moc_next(
         dvdt = dydt[1::2]
 
         dudt[:] = flux_term  # noqa: F841
-        dvdt[:] = sink_term - vval*acc_derivative(
-            flux_term, uval, 4)
+        dvdt[:] = sink_term - vval*ord1_acc2(flux_term, uval)
 
         return dydt
 

@@ -12,36 +12,77 @@
     f is speed n moves along x, and
     g lumps sources and sinks
 
-    functionally, n(x; t), f(x), and g(x; t; n)
+    functionally, n(x; t), f(x), and g(n; x)
 
     note, fn is the flux across x.
 
     Usage:
-    >>> from hypersolver import select_solver
-    >>> solver = select_solver(method)
+    >>> from hypersolver import solver
     >>> solver(n0, x, t, f, g, **kwargs)
+    >>> # kwargs include "method", "backend", etc.
 
-    available methods:
+    available `method`s:
+    pde:
         - "lax_friedrichs" (default)
-        - "lax_wendroff" (still unstable, wip)
-        - "method_of_characteristics" (experimental)
+        - "lax_wendroff"
+        - "method_of_characteristics" (broken, experimental)
+    ode:
+        - "rk2"
 
+    available `backend`s:
+        - "numpy" (default)
+        - "jax" (experimental)
+
+    available `solver_type`s:
+        - "unsplit" (default)
+        - "split"
 """
 
+import os
 
-__version__ = "0.0.4"
+from hypersolver.pde_solver_unsplit import solver_ as solver_upde
+# from hypersolver.pde_solver_split import solver_ as solver_spde
+from hypersolver.ode_solver import solver_ as solver_ode
 
-__hyper_solvers__ = [
+
+__version__ = "0.0.5"
+
+__hyper_methods__ = [
     "lax_friedrichs",
     "lax_wendroff",
     "method_of_characteristics",
+    "rk2",
 ]
 
-from hypersolver.step_solver import solver_
+__hyper_solver_types__ = [
+    "unsplit",
+    "split",
+]
 
 
-def solver(*args, method="lax_friedrichs", **kwargs):
+def solver(
+    *args,
+    method="lax_friedrichs",
+    backend=os.environ.get("HS_BACKEND", "numpy"),
+    verbosity=os.environ.get("HS_VERBOSITY", "0"),
+    solver_type="unsplit",
+    **kwargs
+):
     """ wrapper function to select solvers """
-    if method not in __hyper_solvers__:
+
+    os.environ["HS_BACKEND"] = str(backend)
+    os.environ["HS_VERBOSITY"] = str(verbosity)
+
+    if method not in __hyper_methods__ or \
+            solver_type not in __hyper_solver_types__:
         raise ValueError("method not supported")
-    return solver_(*args, method=method, **kwargs)
+
+    if method.startswith("rk"):
+        return solver_ode(*args, method=method, **kwargs)
+    # if method.endswith("_split"):
+    #     return solver_spde(*args, method=method, **kwargs)
+    return solver_upde(
+        *args,
+        method=method,
+        **kwargs
+    )
