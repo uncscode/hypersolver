@@ -1,6 +1,7 @@
 """ utilities for hypersolver """
 import os
 import numpy as np
+# pytype: disable=import-error
 if os.environ.get("BACKEND", "numpy") == "jax":
     import jax.numpy as jnp  # pylint: disable=import-error
 
