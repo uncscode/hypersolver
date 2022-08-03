@@ -56,7 +56,9 @@ def solver_(*args, **kwargs):
             _flux_term, _sink_term
         )
 
-    def _solver_(init_vals, vars_vals, time_span, flux_term, sink_term, **kwargs):
+    def _solver_(
+            init_vals, vars_vals, time_span,
+            flux_term, sink_term, **kwargs):
         """ solver accorrding to finite-difference scheme
 
             function to loop over `time_step`s using the pde schemes
@@ -91,16 +93,22 @@ def solver_(*args, **kwargs):
         for _ in range(tidx[:-1].size):
 
             next_vals = next_step(
-                sols[itrs, :], vars_vals, _flux_term, _sink_term, stability_factor)
+                sols[itrs, :],
+                vars_vals, _flux_term, _sink_term,
+                stability_factor)
 
             if os.environ.get("HS_VERBOSITY", "0") == "1":
                 print(itrs)
 
             _flux_term = term_util(
-                func_util(flux_term, sols[itrs, :], vars_vals, **kwargs), sols[itrs, :])
+                func_util(
+                    flux_term, sols[itrs, :], vars_vals, **kwargs),
+                sols[itrs, :])
 
             _sink_term_ = term_util(
-                func_util(sink_term, sols[itrs, :], vars_vals, **kwargs), sols[itrs, :])
+                func_util(
+                    sink_term, sols[itrs, :], vars_vals, **kwargs),
+                sols[itrs, :])
 
             if method == "lax_wendroff":
                 _sink_term = _sink_term[1], _sink_term_

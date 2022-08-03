@@ -1,5 +1,7 @@
 """ test: utilities for hypersolver """
+
 import os
+import pytest
 
 from hypersolver.util import xnp as np
 from hypersolver.util import set_xnp
@@ -66,16 +68,19 @@ def test_func_util():
 
 
 def test_time_step_util():
-    """ test: utility to calculate the default time_step """
+    """ test: utility to calculate the default time_step
+
+        NOTE: adding pytest.approx(..., abs=1e-6) for jax's float32
+    """
 
     assert time_step_util(
         np.array([1, 2, 3]),
         np.array([1, 2, 3]),
         None
-    ) == 0.98 * (2 - 1) / 3
+    ) == pytest.approx(np.array([0.98 * (2 - 1) / 3]), abs=1e-6)
 
     assert time_step_util(
         np.array([1, 2, 3]),
         np.array([1, 2, 3]),
         np.array([0.88])
-    ) == 0.88 * (2 - 1) / 3
+    ) == pytest.approx(np.array([0.88 * (2 - 1) / 3]), abs=1e-6)
