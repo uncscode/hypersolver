@@ -20,7 +20,7 @@ def lw_next(
         init_vals:  n
         vars_vals:  x
         flux_term:  f
-        sink_term:  g
+        sink_term:  (g, g)
         stability:  λ = Δt/Δx where |fλ| ≤ 1, ∀ x
 
         outputs
