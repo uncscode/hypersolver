@@ -45,7 +45,7 @@ from hypersolver.pde_solver_unsplit import solver_ as solver_upde
 from hypersolver.ode_solver import solver_ as solver_ode
 
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 __hyper_methods__ = [
     "lax_friedrichs",
