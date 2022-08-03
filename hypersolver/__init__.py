@@ -25,7 +25,7 @@
     pde:
         - "lax_friedrichs" (default)
         - "lax_wendroff"
-        - "method_of_characteristics" (broken, experimental)
+        - "method_of_characteristics" (experimental)
     ode:
         - "rk2"
 
@@ -35,7 +35,7 @@
 
     available `solver_type`s:
         - "unsplit" (default)
-        - "split"
+        - "split" (soon; not yet available)
 """
 
 import os
