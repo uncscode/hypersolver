@@ -1,7 +1,6 @@
 """ test: utilities for hypersolver """
 
-import numpy as np
-
+from hypersolver.util import xnp as np
 from hypersolver.util import term_util
 
 
