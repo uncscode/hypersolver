@@ -1,6 +1,7 @@
 """ shared solver between schemes """
 
 import os
+
 from hypersolver.util import xnp as np
 from hypersolver.util import term_util, func_util, time_step_util
 from hypersolver.lax_friedrichs import lx_next
