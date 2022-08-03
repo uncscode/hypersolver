@@ -8,7 +8,7 @@ if os.environ.get("HS_BACKEND", "numpy") == "jax":
 
 
 def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
-    """ wrapper to set select numpy or jax.numpy """
+    """ wrapper to set numpy or jax.numpy """
 
     return jnp if backend == "jax" else np
 
