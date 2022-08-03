@@ -14,5 +14,17 @@ def test_lx_next():
     ).shape == (_array.size,)
 
     assert lw_next(
+        _array, _array, _array, _array
+    ).shape == (_array.size,)
+
+    assert lw_next(
         _array, _array, _array, (_array, _array), stability=0.90
+    ).shape == (_array.size,)
+
+    assert lw_next(
+        _array, _array, 1.0, 0.0, stability=0.95
+    ).shape == (_array.size,)
+
+    assert lw_next(
+        _array, _array, 1.0, (0.0, 0.0), stability=0.95
     ).shape == (_array.size,)

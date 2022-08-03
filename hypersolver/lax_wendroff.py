@@ -1,6 +1,6 @@
 """ Lax-Wendroff finite-difference scheme """
 
-from hypersolver.util import time_step_util
+from hypersolver.util import time_step_util, term_util
 from hypersolver.derivative import ord1_acc2, ord2_acc2
 
 
@@ -43,6 +43,16 @@ def lw_next(
         Δ(s)^/Δx^2 is second-order derivative with accuracy of 2
         n(j, i) =? (n(j, i-1) + n(j, i+1))/2
     """
+
+    flux_term = term_util(flux_term, init_vals)
+
+    try:
+        sink_term = (
+            term_util(sink_term[0], vars_vals),
+            term_util(sink_term[1], vars_vals),)
+    except TypeError:
+        sink_term = term_util(sink_term, vars_vals)
+        sink_term = (sink_term, sink_term)
 
     time_step = time_step_util(vars_vals, flux_term, stability)
 
