@@ -25,7 +25,7 @@
     pde:
         - "lax_friedrichs" (default)
         - "lax_wendroff"
-        - "method_of_characteristics" (broken, experimental)
+        - "method_of_characteristics" (experimental)
     ode:
         - "rk2"
 
@@ -35,7 +35,7 @@
 
     available `solver_type`s:
         - "unsplit" (default)
-        - "split"
+        - "split" (soon; not yet available)
 """
 
 import os
@@ -45,7 +45,7 @@ from hypersolver.pde_solver_unsplit import solver_ as solver_upde
 from hypersolver.ode_solver import solver_ as solver_ode
 
 
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 __hyper_methods__ = [
     "lax_friedrichs",

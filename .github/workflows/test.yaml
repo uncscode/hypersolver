@@ -14,12 +14,13 @@ jobs:
       fail-fast: false
       matrix:
          python-version: ["3.7", "3.8", "3.9", "3.10"]
+         jax-or-not: ["jax", "numpy"]
 
     steps:
     - uses: actions/checkout@v3
     
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4.1.0
+      uses: actions/setup-python@v4.2.0
       with:
         python-version: ${{ matrix.python-version }}
         
@@ -28,6 +29,13 @@ jobs:
         python -m pip install pytest
         python -m pip install .
 
+    - name: Install JAX
+      run: |
+        if [[ ${{ matrix.jax-or-not }} == "jax" ]]; then
+          python -m pip install jax jaxlib
+        else
+          python -m pip install numpy
+        fi
     - name: Test with pytest
       run: |
-        pytest
+        HS_BACKEND=${{ matrix.jax-or-not }} pytest

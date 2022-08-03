@@ -1,4 +1,4 @@
-""" derivative: calculating derivatives central differencing
+""" calculating derivatives central differencing
 
     available functions:
         - ord1_acc2: order=1, accuracy=2

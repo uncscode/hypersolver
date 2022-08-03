@@ -1,6 +1,7 @@
 """ customized simple ode solvers for use in split methods"""
 
 import os
+
 from hypersolver.util import xnp as np
 from hypersolver.util import term_util
 from hypersolver.runge_kutta import rk2_next

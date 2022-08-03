@@ -6,6 +6,7 @@ from scipy.integrate import odeint
 from scipy.interpolate import interp1d
 
 from hypersolver.derivative import ord1_acc2
+from hypersolver.util import term_util, func_util
 
 
 def moc_next(
@@ -62,9 +63,23 @@ def moc_next(
         return dydt
 
     yval0 = np.empty((vars_vals.size + init_vals.size))
+
     yval0[::2] = vars_vals
+
     yval0[1::2] = init_vals
+
     tspan = np.linspace(0, time_step, 10)
+
+    flux_term = term_util(
+        func_util(flux_term, init_vals, vars_vals),
+        init_vals,
+    )
+
+    sink_term = term_util(
+        func_util(sink_term, init_vals, vars_vals),
+        init_vals,
+    )
+
     results = odeint(_func, yval0, tspan, ml=2, mu=2)
 
     fill = interp1d(

@@ -1,7 +1,8 @@
 """ test basic solver
 """
-import numpy as np
+
 from hypersolver import solver
+from hypersolver.util import xnp as np
 
 _array = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
 
