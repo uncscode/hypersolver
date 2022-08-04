@@ -29,7 +29,7 @@ def ord1_acc2(_func, _xvar):
     return np.concatenate((_derivative0, _derivative, _derivative1))
 
 
-@jit(parallel=True)
+@jit(nopython=True, parallel=True)
 def ord2_acc2(_func, _xvar):
     """ central differencing: order=2, accuracy=2 """
 
