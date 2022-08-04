@@ -33,7 +33,7 @@ jobs:
       run: |
         if [[ ${{ matrix.backend }} == "jax" ]]; then
           python -m pip install jax jaxlib
-        elif [[ ${{ matrix.backend }} == "numpa" ]]; then
+        elif [[ ${{ matrix.backend }} == "numba" ]]; then
           python -m pip install numba
         else
           python -m pip install numpy
