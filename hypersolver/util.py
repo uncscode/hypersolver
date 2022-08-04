@@ -2,11 +2,10 @@
 
 import os
 import warnings
+import functools
 
 import numpy as np
 # pytype: disable=import-error
-if os.environ.get("HS_BACKEND", "numpy") == "jax":
-    import jax.numpy as jnp  # pylint: disable=import-error
 
 
 def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
@@ -15,6 +14,7 @@ def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
     if backend == "jax":
         warnings.warn(
             "experimental jax support is suboptimal with no performance gain")
+        import jax.numpy as jnp  # pylint: disable=import-outside-toplevel
         return jnp
 
     return np
@@ -51,3 +51,35 @@ def time_step_util(vars_vals, flux_term, stability):
     return xnp.array(stability) * xnp.array(
         vars_vals[1:] - vars_vals[:-1]
     ).min() / xnp.array(flux_term).max()
+
+
+def set_jit(backend=os.environ.get("HS_BACKEND", "numpy")):
+    """ fake numba as a global namespace """
+
+    if backend == "numba":
+        warnings.warn(
+            "experimental numba support")
+        from numba import jit  # pylint: disable=import-outside-toplevel
+        return jit
+
+    def wrap(nopython=True, parallel=True):
+        """ fake jit """
+        _, _ = nopython, parallel
+
+        def wrapper(func):
+
+            @functools.wraps(func)
+            def inner(*args, **kwargs):
+
+                returning = func(*args, **kwargs)
+
+                return returning
+
+            return inner
+
+        return wrapper
+
+    return wrap
+
+
+jxt = set_jit()

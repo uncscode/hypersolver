@@ -14,7 +14,7 @@ jobs:
       fail-fast: false
       matrix:
          python-version: ["3.7", "3.8", "3.9", "3.10"]
-         jax-or-not: ["jax", "numpy"]
+         backend: ["jax", "numpy", "numba"]
 
     steps:
     - uses: actions/checkout@v3
@@ -29,13 +29,15 @@ jobs:
         python -m pip install pytest
         python -m pip install .
 
-    - name: Install JAX
+    - name: Install dependencies for backend ${{ matrix.backend }}
       run: |
-        if [[ ${{ matrix.jax-or-not }} == "jax" ]]; then
+        if [[ ${{ matrix.backend }} == "jax" ]]; then
           python -m pip install jax jaxlib
+        elif [[ ${{ matrix.backend }} == "numpa" ]]; then
+          python -m pip install numba
         else
           python -m pip install numpy
         fi
     - name: Test with pytest
       run: |
-        HS_BACKEND=${{ matrix.jax-or-not }} pytest
+        HS_BACKEND=${{ matrix.backend }} pytest

@@ -31,6 +31,7 @@
 
     available `backend`s:
         - "numpy" (default)
+        - "numba" (numpy + numba; experimental; suboptimal)
         - "jax" (experimental; suboptimal with no performance gain)
 
     available `solver_type`s:
@@ -74,6 +75,12 @@ def solver(
     os.environ["HS_BACKEND"] = str(backend)
     os.environ["HS_VERBOSITY"] = str(verbosity)
     os.environ["HS_SOLVER_TYPE"] = str(solver_type)
+
+    if backend == "numba" or os.environ.get("NUMBA_DISABLE_JIT") == "0":
+        os.environ["HS_BACKEND"] = "numpy"
+        os.environ["NUMBA_DISABLE_JIT"] = "0"
+    else:
+        os.environ["NUMBA_DISABLE_JIT"] = "1"
 
     # pylint: disable=import-outside-toplevel
     from hypersolver.pde_solver_unsplit import solver_ as solver_upde

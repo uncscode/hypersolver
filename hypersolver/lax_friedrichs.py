@@ -1,10 +1,12 @@
 """ Lax-Friedrics finite-difference scheme """
 
 from hypersolver.util import xnp as np
+from hypersolver.util import jxt as jit
 from hypersolver.util import time_step_util
 from hypersolver.derivative import ord1_acc2
 
 
+@jit(parallel=True)
 def lx_init(init_vals):
     """ initialize the array
 
@@ -21,6 +23,7 @@ def lx_init(init_vals):
         ),)
 
 
+@jit(parallel=True)
 def lx_next(
     init_vals,
     vars_vals,
