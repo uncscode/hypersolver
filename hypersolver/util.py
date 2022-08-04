@@ -54,7 +54,7 @@ def set_jit(backend=os.environ.get("HS_BACKEND", "numpy")):
 jxt = set_jit()
 
 
-@jxt
+# @jxt
 def term_util(term, orig):
     """ regularize term
 
@@ -74,7 +74,7 @@ def func_util(func, _vals, _vars, **kwargs):
     return func(_vals, _vars, **kwargs) if callable(func) else func
 
 
-@jxt
+# @jxt
 def time_step_util(vars_vals, flux_term, stability):
     """ utility to calculate the default time_step
     """
