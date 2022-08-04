@@ -5,20 +5,6 @@ from hypersolver.util import jxt as jit
 from hypersolver.derivative import ord1_acc2
 
 
-# @jit(nopython=True, parallel=True)
-def lx_init(init_vals):
-    """ initialize the array
-
-        pad the array with the prescribed first and last values
-    """
-
-    return np.concatenate((
-        np.asarray([0.5 * (init_vals[1] + init_vals[0])]),
-        init_vals,
-        np.asarray([0.5 * (init_vals[-1] + init_vals[-2])])
-    ))
-
-
 @jit(parallel=True, cache=True)
 def lx_next(
     init_vals,

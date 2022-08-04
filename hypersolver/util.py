@@ -33,9 +33,9 @@ def set_jxt(backend=os.environ.get("HS_BACKEND", "numpy")):
         from numba import jit  # pylint: disable=import-outside-toplevel
         return jit
 
-    def wrap(nopython=True, parallel=True):
+    def wrap(nopython=True, parallel=True, **kwargs):
         """ fake jit """
-        _, _ = nopython, parallel
+        _, _, _ = nopython, parallel, kwargs
 
         def wrapper(func):
 

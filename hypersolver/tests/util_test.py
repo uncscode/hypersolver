@@ -4,10 +4,8 @@ import os
 import pytest
 
 from hypersolver.util import xnp as np
-from hypersolver.util import jxt as jit
 from hypersolver.util import set_xnp
 from hypersolver.util import term_util
-from hypersolver.util import func_util
 from hypersolver.util import time_step_util
 
 
@@ -38,27 +36,6 @@ def test_term_util():
     assert term_util(
         3., np.asarray([1, 2, 3])
     ).max() == 3
-
-
-def test_func_util():
-    """ test: evaluate function if one """
-
-    @jit(nopython=True, parallel=True)
-    def func(_vals, _vars):
-        """ some func """
-        return _vals + _vars
-
-    # assert func_util(
-    #     func,
-    #     np.array([1, 2, 3]),
-    #     np.array([1, 2, 3]),
-    # ).shape == np.array([2, 4, 6]).shape
-
-    assert func_util(
-        func,
-        np.array([1, 2, 3]),
-        np.array([1, 2, 3]),
-    ).all() == np.array([2, 4, 6]).all()
 
 
 def test_time_step_util():

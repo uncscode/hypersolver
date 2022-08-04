@@ -17,3 +17,6 @@ def test_rk2_next():
 
     assert rk2_next(
         inputs, 1, 1, 0.1).shape == inputs.shape
+
+    assert rk2_next(
+        inputs, inputs, lambda y, x: y/x, 0.1).shape == inputs.shape

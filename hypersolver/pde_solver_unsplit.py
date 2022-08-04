@@ -4,7 +4,7 @@ import os
 
 from hypersolver.util import xnp as np
 from hypersolver.util import jxt as jit
-from hypersolver.util import term_util, func_util, time_step_util
+from hypersolver.util import term_util, time_step_util
 from hypersolver.lax_friedrichs import lx_next
 from hypersolver.lax_wendroff import lw_next
 # pytype: disable=import-error
