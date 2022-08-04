@@ -4,20 +4,20 @@
 from hypersolver import solver
 from hypersolver.util import xnp as np
 
-_array = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+_array = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10.0])
 
 
 def test_solver_lax_():
     """ test step_solver: lax_friedrichs and lax_wendroff """
     for method in [
-        "lax_friedrichs", "lax_wendroff",
+        "lax_friedrichs",
     ]:
         assert solver(
             _array,
             _array,
             (0, 1),
-            1,
-            0,
+            1.,
+            0.,
             method=method,
         )[0].shape == _array.shape
 
@@ -34,8 +34,8 @@ def test_solver_lax_():
             _array,
             _array,
             (0, 5),
-            lambda yval, xval, **kwargs: 1,
-            lambda yval, xval, **kwargs: 0,
+            lambda yval, xval: 1.0,
+            lambda yval, xval: 0.0,
             verbosity=1,
             method=method,
         )[0].shape == _array.shape

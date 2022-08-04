@@ -5,7 +5,7 @@ from hypersolver.util import jxt as jit
 from hypersolver.derivative import ord1_acc2
 
 
-@jit(nopython=True, parallel=True)
+# @jit(nopython=True, parallel=True)
 def lx_init(init_vals):
     """ initialize the array
 
@@ -19,7 +19,7 @@ def lx_init(init_vals):
     ))
 
 
-@jit(parallel=True)
+@jit(parallel=True, cache=True)
 def lx_next(
     init_vals,
     vars_vals,

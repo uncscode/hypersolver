@@ -9,7 +9,7 @@ from hypersolver.util import xnp as np
 from hypersolver.util import jxt as jit
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True, parallel=True, cache=True)
 def ord1_acc2(_func, _xvar):
     """ central differencing: order=1, accuracy=2 """
 

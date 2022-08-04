@@ -3,6 +3,7 @@
 import os
 
 from hypersolver.util import xnp as np
+from hypersolver.util import jxt as jit
 from hypersolver.util import term_util, func_util, time_step_util
 from hypersolver.lax_friedrichs import lx_next
 from hypersolver.lax_wendroff import lw_next
@@ -29,31 +30,38 @@ def solver_(*args, **kwargs):
         stability_factor = kwargs.get('stability_factor', 0.98)
 
         vars_vals = term_util(vars_vals, init_vals)
+        if callable(flux_term):
+            _flux_term = jit(nopython=True, cache=True)(flux_term)
+        else:
+            _flux_term = lambda yvar, xvar: term_util(flux_term, init_vals)
+            _flux_term = jit(nopython=True)(_flux_term)
+        if callable(sink_term):
+            _sink_term = jit(nopython=True, cache=True)(sink_term)
+        else:
+            _sink_term = lambda yvar, xvar: term_util(sink_term, init_vals)
+            _sink_term = jit(nopython=True)(_sink_term)
+        # _flux_term = term_util(
+        #     func_util(flux_term, init_vals, vars_vals, **kwargs), init_vals)
 
-        _flux_term = term_util(
-            func_util(flux_term, init_vals, vars_vals, **kwargs), init_vals)
-
-        _sink_term = term_util(
-            func_util(sink_term, init_vals, vars_vals, **kwargs), init_vals)
+        # _sink_term = term_util(
+        #     func_util(sink_term, init_vals, vars_vals, **kwargs), init_vals)
 
         stability_factor, time_step = (
             stability_factor,
-            time_step_util(vars_vals, _flux_term, stability_factor)
+            time_step_util(vars_vals, _flux_term(init_vals, vars_vals), stability_factor)
         ) if method in ["lax_friedrichs", "lax_wendroff"] else (
             np.array((time_span[-1] - time_span[0]) / 5.0),
             np.array((time_span[-1] - time_span[0]) / 5.0))
 
         tidx = np.arange(time_span[0], time_span[-1] + time_step, time_step)
 
-        itrs = 0
-
         sols = init_vals.reshape(1, -1)
 
-        if method == "lax_wendroff":
-            _sink_term = _sink_term, _sink_term
+        # if method == "lax_wendroff":
+        #     _sink_term = _sink_term, _sink_term
 
         return (
-            tidx, itrs, sols, stability_factor,
+            tidx, sols, time_step,
             _flux_term, _sink_term
         )
 
@@ -85,41 +93,46 @@ def solver_(*args, **kwargs):
         """
 
         (
-            tidx, itrs, sols, stability_factor,
+            tidx, sols, time_step,
             _flux_term, _sink_term
         ) = _prep_solver(
             init_vals, vars_vals, time_span, flux_term, sink_term, **kwargs
         )
 
-        for _ in range(tidx[:-1].size):
+        @jit(nopython=True, cache=True)
+        def _loop_(tidx, sols, time_step, _flux_term, _sink_term):
+            """ loop over """
 
-            next_vals = next_step(
-                sols[itrs, :],
-                vars_vals, _flux_term, _sink_term,
-                stability_factor)
+            for itrs in range(tidx[:-1].size):
+                
+                next_vals = next_step(
+                    sols[itrs, :],
+                    vars_vals, _flux_term(sols[itrs, :], vars_vals), _sink_term(sols[itrs, :], vars_vals),
+                    time_step)
 
-            if os.environ.get("HS_VERBOSITY", "0") == "1":
-                print(itrs)
+                # if os.environ.get("HS_VERBOSITY", "0") == "1":
+                #     print(itrs)
 
-            _flux_term = term_util(
-                func_util(
-                    flux_term, sols[itrs, :], vars_vals, **kwargs),
-                sols[itrs, :])
+                # _flux_term = term_util(
+                #     func_util(
+                #         flux_term, sols[itrs, :], vars_vals, **kwargs),
+                #     sols[itrs, :])
 
-            _sink_term_ = term_util(
-                func_util(
-                    sink_term, sols[itrs, :], vars_vals, **kwargs),
-                sols[itrs, :])
+                # _sink_term_ = term_util(
+                #     func_util(
+                #         sink_term, sols[itrs, :], vars_vals, **kwargs),
+                #     sols[itrs, :])
 
-            if method == "lax_wendroff":
-                _sink_term = _sink_term[1], _sink_term_
-            else:
-                _sink_term = _sink_term_
+                # if method == "lax_wendroff":
+                #     _sink_term = _sink_term[1], _sink_term_
+                # else:
+                #     _sink_term = _sink_term_
 
-            itrs += 1
+                # itrs += 1
 
-            sols = np.concatenate([sols, next_vals.reshape(1, -1)], axis=0)
+                sols = np.concatenate((sols, next_vals.reshape(1, -1)), axis=0)
 
-        return sols
+            return sols
+        return _loop_(tidx, sols, time_step, _flux_term, _sink_term)
 
     return _solver_(*args, **kwargs)
