@@ -6,6 +6,7 @@ import functools
 
 import numpy as np
 # pytype: disable=import-error
+# pylint: disable=import-error
 
 
 def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
