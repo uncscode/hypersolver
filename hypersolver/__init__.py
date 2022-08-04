@@ -31,7 +31,7 @@
 
     available `backend`s:
         - "numpy" (default)
-        - "jax" (experimental)
+        - "jax" (experimental; suboptimal with no performance gain)
 
     available `solver_type`s:
         - "unsplit" (default)
@@ -39,10 +39,6 @@
 """
 
 import os
-
-from hypersolver.pde_solver_unsplit import solver_ as solver_upde
-# from hypersolver.pde_solver_split import solver_ as solver_spde
-from hypersolver.ode_solver import solver_ as solver_ode
 
 
 __version__ = "0.0.6"
@@ -62,25 +58,34 @@ __hyper_solver_types__ = [
 
 def solver(
     *args,
-    method="lax_friedrichs",
+    method=os.environ.get("HS_METHOD", "lax_friedrichs"),
     backend=os.environ.get("HS_BACKEND", "numpy"),
     verbosity=os.environ.get("HS_VERBOSITY", "0"),
-    solver_type="unsplit",
+    solver_type=os.environ.get("HS_SOLVER_TYPE", "unsplit"),
     **kwargs
 ):
     """ wrapper function to select solvers """
-
-    os.environ["HS_BACKEND"] = str(backend)
-    os.environ["HS_VERBOSITY"] = str(verbosity)
 
     if method not in __hyper_methods__ or \
             solver_type not in __hyper_solver_types__:
         raise ValueError("method not supported")
 
+    os.environ["HS_METHOD"] = str(method)
+    os.environ["HS_BACKEND"] = str(backend)
+    os.environ["HS_VERBOSITY"] = str(verbosity)
+    os.environ["HS_SOLVER_TYPE"] = str(solver_type)
+
+    # pylint: disable=import-outside-toplevel
+    from hypersolver.pde_solver_unsplit import solver_ as solver_upde
+    # from hypersolver.pde_solver_split import solver_ as solver_spde
+    from hypersolver.ode_solver import solver_ as solver_ode
+
     if method.startswith("rk"):
         return solver_ode(*args, method=method, **kwargs)
+
     # if method.endswith("_split"):
     #     return solver_spde(*args, method=method, **kwargs)
+
     return solver_upde(
         *args,
         method=method,
