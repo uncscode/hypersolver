@@ -24,36 +24,6 @@ def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
 xnp = set_xnp()
 
 
-def term_util(term, orig):
-    """ regularize term
-
-        utility to "regularize" the input "term"
-        by making it look like the "orig" input
-    """
-
-    if isinstance(term, type(orig)) and xnp.array(term).shape == orig.shape:
-        return term
-
-    return xnp.full_like(orig, term)
-
-
-def func_util(func, _vals, _vars, **kwargs):
-    """ evaluate function if one """
-    return func(_vals, _vars, **kwargs) if callable(func) else func
-
-
-def time_step_util(vars_vals, flux_term, stability):
-    """ utility to calculate the default time_step
-    """
-
-    if stability is None:
-        stability = xnp.array([0.98])
-
-    return xnp.array(stability) * xnp.array(
-        vars_vals[1:] - vars_vals[:-1]
-    ).min() / xnp.array(flux_term).max()
-
-
 def set_jit(backend=os.environ.get("HS_BACKEND", "numpy")):
     """ fake numba as a global namespace """
 
@@ -71,9 +41,7 @@ def set_jit(backend=os.environ.get("HS_BACKEND", "numpy")):
 
             @functools.wraps(func)
             def inner(*args, **kwargs):
-
                 returning = func(*args, **kwargs)
-
                 return returning
 
             return inner
@@ -84,3 +52,36 @@ def set_jit(backend=os.environ.get("HS_BACKEND", "numpy")):
 
 
 jxt = set_jit()
+
+
+@jxt
+def term_util(term, orig):
+    """ regularize term
+
+        utility to "regularize" the input "term"
+        by making it look like the "orig" input
+    """
+
+    if isinstance(term, type(orig)) and xnp.asarray(term).shape == orig.shape:
+        return term
+
+    return xnp.full_like(orig, term)
+
+
+# @jxt(parallel=True)
+def func_util(func, _vals, _vars, **kwargs):
+    """ evaluate function if one """
+    return func(_vals, _vars, **kwargs) if callable(func) else func
+
+
+@jxt
+def time_step_util(vars_vals, flux_term, stability):
+    """ utility to calculate the default time_step
+    """
+
+    if stability is None:
+        stability = xnp.asarray([0.98])
+
+    return xnp.array(stability) * xnp.array(
+        vars_vals[1:] - vars_vals[:-1]
+    ).min() / xnp.array(flux_term).max()

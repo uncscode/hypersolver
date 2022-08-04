@@ -6,21 +6,18 @@ from hypersolver.util import time_step_util
 from hypersolver.derivative import ord1_acc2
 
 
-@jit(parallel=True)
+@jit(nopython=True, parallel=True)
 def lx_init(init_vals):
     """ initialize the array
 
         pad the array with the prescribed first and last values
     """
 
-    return np.pad(
+    return np.concatenate((
+        np.asarray([0.5 * (init_vals[1] + init_vals[0])]),
         init_vals,
-        (1, 1),
-        mode="constant",
-        constant_values=(
-            0.5 * (init_vals[1] + init_vals[0]),
-            0.5 * (init_vals[-1] + init_vals[-2])
-        ),)
+        np.asarray([0.5 * (init_vals[-1] + init_vals[-2])])
+    ))
 
 
 @jit(parallel=True)
