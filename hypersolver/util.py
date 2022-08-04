@@ -24,7 +24,7 @@ def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
 xnp = set_xnp()
 
 
-def set_jit(backend=os.environ.get("HS_BACKEND", "numpy")):
+def set_jxt(backend=os.environ.get("HS_BACKEND", "numpy")):
     """ fake numba as a global namespace """
 
     if backend == "numba":
@@ -51,10 +51,10 @@ def set_jit(backend=os.environ.get("HS_BACKEND", "numpy")):
     return wrap
 
 
-jxt = set_jit()
+jxt = set_jxt()
 
 
-# @jxt
+@jxt(nopython=True)
 def term_util(term, orig):
     """ regularize term
 
@@ -62,26 +62,21 @@ def term_util(term, orig):
         by making it look like the "orig" input
     """
 
-    if isinstance(term, type(orig)) and xnp.asarray(term).shape == orig.shape:
-        return term
-
-    return xnp.full_like(orig, term)
+    return xnp.broadcast_arrays(
+        xnp.asarray(term, dtype=orig.dtype), orig)[0]
 
 
-# @jxt(parallel=True)
+# @jxt(nopython=True, parallel=True)
 def func_util(func, _vals, _vars, **kwargs):
     """ evaluate function if one """
     return func(_vals, _vars, **kwargs) if callable(func) else func
 
 
-# @jxt
-def time_step_util(vars_vals, flux_term, stability):
+@jxt(nopython=True, parallel=True)
+def time_step_util(vars_vals, flux_term, stability=0.98):
     """ utility to calculate the default time_step
     """
 
-    if stability is None:
-        stability = xnp.asarray([0.98])
-
-    return xnp.array(stability) * xnp.array(
+    return (xnp.asarray(stability) * xnp.asarray(
         vars_vals[1:] - vars_vals[:-1]
-    ).min() / xnp.array(flux_term).max()
+    ).min() / xnp.asarray(flux_term).max()).item()
