@@ -10,21 +10,13 @@ def test_lx_next():
     _array = np.linspace(10, 20, 1000)
 
     assert lw_next(
-        _array, _array, _array, (_array, _array)
+        _array, _array, _array, (_array, _array), 0.01
     ).shape == (_array.size,)
 
     assert lw_next(
-        _array, _array, _array, _array
+        _array, _array, _array, (_array, _array), 0.01
     ).shape == (_array.size,)
 
     assert lw_next(
-        _array, _array, _array, (_array, _array), stability=0.90
-    ).shape == (_array.size,)
-
-    assert lw_next(
-        _array, _array, 1.0, 0.0, stability=0.95
-    ).shape == (_array.size,)
-
-    assert lw_next(
-        _array, _array, 1.0, (0.0, 0.0), stability=0.95
+        _array, _array, _array, (_array, _array), 0.09
     ).shape == (_array.size,)

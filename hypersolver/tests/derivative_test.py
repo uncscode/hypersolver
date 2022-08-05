@@ -5,6 +5,7 @@ import pytest
 
 from hypersolver.util import xnp as np
 from hypersolver.derivative import ord1_acc2, ord2_acc2
+from hypersolver.derivative import ord1_acc4
 
 xvar = np.linspace(0, 10, 1000)
 yvar = np.sin(xvar)
@@ -28,6 +29,34 @@ def test_ord1_acc2():
         assert (ord1_acc2(
             yvar, xvar) - dydx).sum() == pytest.approx(
                 (dydx-dydx).sum(), abs=1e-2)
+
+
+def test_ord1_acc4():
+    """ test: central differencing: order=1, accuracy=4 """
+
+    assert ord1_acc4(
+        yvar, xvar).shape == dydx.shape
+
+    assert ord1_acc4(
+        yvar, xvar) == pytest.approx(dydx, abs=1e-2)
+
+    if os.environ.get("HS_BACKEND", "numpy") == "numpy":
+        assert (ord1_acc4(
+            yvar, xvar) - dydx).sum() == pytest.approx(0.0, abs=1e-2)
+    else:
+        assert (ord1_acc4(
+            yvar, xvar) - dydx).sum() == pytest.approx(
+                (dydx-dydx).sum(), abs=1e-2)
+
+
+def test_comp_ord1():
+    """ test: compare ord1 acc(2,4) """
+
+    assert (
+        (ord1_acc4(yvar, xvar)-dydx)**2
+    ).sum() <= (
+        (ord1_acc2(yvar, xvar)-dydx)**2
+    ).sum()
 
 
 def test_ord2_acc2():

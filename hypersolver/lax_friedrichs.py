@@ -1,32 +1,17 @@
 """ Lax-Friedrics finite-difference scheme """
 
 from hypersolver.util import xnp as np
-from hypersolver.util import time_step_util
+from hypersolver.util import jxt as jit
 from hypersolver.derivative import ord1_acc2
 
 
-def lx_init(init_vals):
-    """ initialize the array
-
-        pad the array with the prescribed first and last values
-    """
-
-    return np.pad(
-        init_vals,
-        (1, 1),
-        mode="constant",
-        constant_values=(
-            0.5 * (init_vals[1] + init_vals[0]),
-            0.5 * (init_vals[-1] + init_vals[-2])
-        ),)
-
-
+@jit(parallel=True, cache=True)
 def lx_next(
     init_vals,
     vars_vals,
     flux_term,
     sink_term,
-    stability=None,
+    time_step,
 ):
     """ next step according to Lax-Friedrics finite-difference scheme
 
@@ -38,7 +23,7 @@ def lx_next(
         vars_vals:  x
         flux_term:  f
         sink_term:  g
-        stability:  λ = Δt/Δx where |fλ| ≤ 1, ∀ x
+        time_step:  Δt
 
         outputs
         -------
@@ -53,9 +38,11 @@ def lx_next(
         n(j, i) = (n(j, i-1) + n(j, i+1))/2
     """
 
-    time_step = time_step_util(vars_vals, flux_term, stability)
-
-    _init_vals = lx_init(0.5 * (init_vals[2:] + init_vals[:-2]))
+    _init_vals = np.concatenate((
+        np.asarray([0.5 * (init_vals[1] + init_vals[0])]),
+        np.asarray((0.5 * (init_vals[2:] + init_vals[:-2]))),
+        np.asarray([0.5 * (init_vals[-1] + init_vals[-2])])
+    ))
 
     return _init_vals - time_step * (
         ord1_acc2(init_vals*flux_term, vars_vals) - sink_term)

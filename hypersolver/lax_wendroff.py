@@ -1,15 +1,17 @@
 """ Lax-Wendroff finite-difference scheme """
 
-from hypersolver.util import time_step_util, term_util
+from hypersolver.util import jxt as jit
+from hypersolver.util import term_util
 from hypersolver.derivative import ord1_acc2, ord2_acc2
 
 
+@jit(nopython=True, parallel=True)
 def lw_next(
     init_vals,
     vars_vals,
     flux_term,
     sink_term,
-    stability=None,
+    time_step,
 ):
     """ next step according to Lax-Friedrics finite-difference scheme
 
@@ -46,15 +48,9 @@ def lw_next(
 
     flux_term = term_util(flux_term, init_vals)
 
-    try:
-        sink_term = (
-            term_util(sink_term[0], vars_vals),
-            term_util(sink_term[1], vars_vals),)
-    except TypeError:
-        sink_term = term_util(sink_term, vars_vals)
-        sink_term = (sink_term, sink_term)
-
-    time_step = time_step_util(vars_vals, flux_term, stability)
+    _sink1 = term_util(sink_term[0], vars_vals)
+    _sink2 = term_util(sink_term[1], vars_vals)
+    sink_term = (_sink1, _sink2)
 
     return init_vals + time_step * (
         sink_term[1] - ord1_acc2(init_vals*flux_term, vars_vals)
