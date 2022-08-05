@@ -12,7 +12,7 @@ if os.environ.get("HS_BACKEND", "numpy") == "jax":
     import jax  # pylint: disable=import-error
 
 
-def solver_(*args, **kwargs):
+def solver_(*args, **kwargs):  # flake8: noqa: C901
     """ set the solver """
 
     method = kwargs.get("method", "lax_friedrichs")
