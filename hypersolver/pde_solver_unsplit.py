@@ -31,24 +31,24 @@ def solver_(*args, **kwargs):
 
         vars_vals = term_util(vars_vals, init_vals)
         if callable(flux_term):
-            _flux_term = jit(nopython=True, cache=True)(flux_term)
+            _flux_term = jit(nopython=True)(flux_term)
         else:
-            _flux_term = lambda yvar, xvar: term_util(flux_term, init_vals)
-            _flux_term = jit(nopython=True)(_flux_term)
+            @jit(nopython=True)
+            def _flux_term(yvar, xvar):  # pylint: disable=unused-argument
+                """ flux term to jit """
+                return term_util(flux_term, init_vals)
         if callable(sink_term):
-            _sink_term = jit(nopython=True, cache=True)(sink_term)
+            _sink_term = jit(nopython=True)(sink_term)
         else:
-            _sink_term = lambda yvar, xvar: term_util(sink_term, init_vals)
-            _sink_term = jit(nopython=True)(_sink_term)
-        # _flux_term = term_util(
-        #     func_util(flux_term, init_vals, vars_vals, **kwargs), init_vals)
-
-        # _sink_term = term_util(
-        #     func_util(sink_term, init_vals, vars_vals, **kwargs), init_vals)
+            @jit(nopython=True)
+            def _sink_term(yvar, xvar):  # pylint: disable=unused-argument
+                """ sink term to jit """
+                return term_util(sink_term, init_vals)
 
         stability_factor, time_step = (
             stability_factor,
-            time_step_util(vars_vals, _flux_term(init_vals, vars_vals), stability_factor)
+            time_step_util(
+                vars_vals, _flux_term(init_vals, vars_vals), stability_factor)
         ) if method in ["lax_friedrichs", "lax_wendroff"] else (
             np.array((time_span[-1] - time_span[0]) / 5.0),
             np.array((time_span[-1] - time_span[0]) / 5.0))
@@ -56,9 +56,6 @@ def solver_(*args, **kwargs):
         tidx = np.arange(time_span[0], time_span[-1] + time_step, time_step)
 
         sols = init_vals.reshape(1, -1)
-
-        # if method == "lax_wendroff":
-        #     _sink_term = _sink_term, _sink_term
 
         return (
             tidx, sols, time_step,
@@ -99,36 +96,33 @@ def solver_(*args, **kwargs):
             init_vals, vars_vals, time_span, flux_term, sink_term, **kwargs
         )
 
-        @jit(nopython=True, cache=True)
+        @jit(nopython=True)
         def _loop_(tidx, sols, time_step, _flux_term, _sink_term):
             """ loop over """
 
             for itrs in range(tidx[:-1].size):
-                
-                next_vals = next_step(
-                    sols[itrs, :],
-                    vars_vals, _flux_term(sols[itrs, :], vars_vals), _sink_term(sols[itrs, :], vars_vals),
-                    time_step)
 
-                # if os.environ.get("HS_VERBOSITY", "0") == "1":
-                #     print(itrs)
-
-                # _flux_term = term_util(
-                #     func_util(
-                #         flux_term, sols[itrs, :], vars_vals, **kwargs),
-                #     sols[itrs, :])
-
-                # _sink_term_ = term_util(
-                #     func_util(
-                #         sink_term, sols[itrs, :], vars_vals, **kwargs),
-                #     sols[itrs, :])
-
-                # if method == "lax_wendroff":
-                #     _sink_term = _sink_term[1], _sink_term_
-                # else:
-                #     _sink_term = _sink_term_
-
-                # itrs += 1
+                if method != "lax_wendroff":
+                    next_vals = next_step(
+                        sols[itrs, :],
+                        vars_vals, _flux_term(
+                            sols[itrs, :], vars_vals), _sink_term(
+                                sols[itrs, :], vars_vals),
+                        time_step)
+                else:
+                    next_vals = next_step(
+                        sols[itrs, :],
+                        vars_vals, _flux_term(
+                            sols[itrs, :], vars_vals
+                        ), (
+                            _sink_term(
+                                sols[
+                                    np.asarray(
+                                        (itrs-1, 0)
+                                    ).max().item(), :], vars_vals
+                            ),
+                            _sink_term(sols[itrs, :], vars_vals)),
+                        time_step)
 
                 sols = np.concatenate((sols, next_vals.reshape(1, -1)), axis=0)
 
