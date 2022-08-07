@@ -5,7 +5,7 @@ from hypersolver.util import term_util
 from hypersolver.derivative import ord1_acc2, ord2_acc2
 
 
-@jit(nopython=True, parallel=True)
+@jit(nopython=True)
 def lw_next(
     init_vals,
     vars_vals,

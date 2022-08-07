@@ -5,7 +5,7 @@ from hypersolver.util import jxt as jit
 from hypersolver.derivative import ord1_acc2
 
 
-@jit(parallel=True, cache=True)
+@jit(parallel=True)
 def lx_next(
     init_vals,
     vars_vals,

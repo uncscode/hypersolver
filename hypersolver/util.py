@@ -72,7 +72,7 @@ def func_util(func, _vals, _vars, **kwargs):
     return func(_vals, _vars, **kwargs) if callable(func) else func
 
 
-@jxt(nopython=True, parallel=True)
+@jxt(nopython=True)
 def time_step_util(vars_vals, flux_term, stability=0.98):
     """ utility to calculate the default time_step
     """
