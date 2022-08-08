@@ -62,7 +62,6 @@ def lx_loop(time, init_vals, vars_vals, _flux_term, _sink_term, stability):
     )
 
     pts = np.asarray((tidx.size+1., np.asarray(time).size+100., 100.)).min()//1
-    print(pts, tidx.size, np.asarray(time).size)
     sols = np.asarray(init_vals).reshape(1, -1)
     tims = np.asarray(tidx[0]).reshape(1, -1)
     _yvar = sols[0]
