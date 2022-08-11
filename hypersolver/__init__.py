@@ -76,19 +76,22 @@ def solver(
     os.environ["HS_VERBOSITY"] = str(verbosity)
     os.environ["HS_SOLVER_TYPE"] = str(solver_type)
 
-    # pylint: disable=import-outside-toplevel
-    from hypersolver.pde_solver_unsplit import solver_ as solver_upde
-    # from hypersolver.pde_solver_split import solver_ as solver_spde
-    from hypersolver.ode_solver import solver_ as solver_ode
+    # # pylint: disable=import-outside-toplevel
+    # from hypersolver.pde_solver_unsplit import solver_ as solver_upde
+    # # from hypersolver.pde_solver_split import solver_ as solver_spde
+    # from hypersolver.ode_solver import solver_ as solver_ode
 
-    if method.startswith("rk"):
-        return solver_ode(*args, method=method, **kwargs)
+    # if method.startswith("rk"):
+    #     return solver_ode(*args, method=method, **kwargs)
 
-    # if method.endswith("_split"):
-    #     return solver_spde(*args, method=method, **kwargs)
+    # # if method.endswith("_split"):
+    # #     return solver_spde(*args, method=method, **kwargs)
 
-    return solver_upde(
-        *args,
-        method=method,
-        **kwargs
-    )
+    # return solver_upde(
+    #     *args,
+    #     method=method,
+    #     **kwargs
+    # )
+    _ = kwargs
+    _ = args
+    return 0

@@ -1,6 +1,7 @@
 """ test: Runge-Kutta methods for ode solvers """
 
 from hypersolver.util import xnp as np
+from hypersolver.util import jxt as jit
 from hypersolver.runge_kutta import rk2_next
 
 
@@ -9,14 +10,10 @@ def test_rk2_next():
 
     inputs = np.linspace(1, 100, 1000)
 
-    assert rk2_next(
-        inputs, inputs, inputs, 0.1).shape == inputs.shape
+    @jit(nopython=True)
+    def func(yvar, xvar):
+        """ func """
+        return yvar/xvar
 
     assert rk2_next(
-        inputs, inputs, 1, 0.1).shape == inputs.shape
-
-    assert rk2_next(
-        inputs, 1, 1, 0.1).shape == inputs.shape
-
-    assert rk2_next(
-        inputs, inputs, lambda y, x: y/x, 0.1).shape == inputs.shape
+        inputs, inputs, func, 0.1).shape == inputs.shape
