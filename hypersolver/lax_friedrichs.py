@@ -1,4 +1,28 @@
-""" Lax-Friedrics finite-difference scheme """
+""" Lax-Friedrics finite-difference scheme
+
+    ∂n/∂t + ∂(fn)/∂x = g
+
+    inputs
+    ------
+    init_:  n
+    vars_:  x
+    flux_:  f
+    sink_:  g
+    time_:  Δt
+
+    outputs
+    -------
+    next_:  n
+
+    numerics
+    --------
+    n(j+1, i) = n(j, i) + Δt (g - Δ(fn)/Δx)(j, i)
+
+    Δt ≤ λΔx/f ∀ x
+    Δ(fn)/Δx is first-order derivative with accuracy of 2
+    n(j, i) = (n(j, i-1) + n(j, i+1))/2
+
+"""
 
 from hypersolver.util import xnp as np
 from hypersolver.util import jxt as jit
@@ -9,30 +33,7 @@ from hypersolver.derivative import ord1_acc2
 
 @jit(parallel=True)
 def lx_next(init_, vars_, flux_, sink_, time_):
-    """ next step according to Lax-Friedrics finite-difference scheme
-
-        ∂n/∂t + ∂(fn)/∂x = g
-
-        inputs
-        ------
-        init_:  n
-        vars_:  x
-        flux_:  f
-        sink_:  g
-        time_:  Δt
-
-        outputs
-        -------
-        next_:  n
-
-        numerics
-        --------
-        n(j+1, i) = n(j, i) + Δt (g - Δ(fn)/Δx)(j, i)
-
-        Δt ≤ λΔx/f ∀ x
-        Δ(fn)/Δx is first-order derivative with accuracy of 2
-        n(j, i) = (n(j, i-1) + n(j, i+1))/2
-    """
+    """ next step according to Lax-Friedrics finite-difference scheme """
 
     _init_ = np.concatenate((
         np.asarray([0.5 * (init_[1] + init_[0])]),

@@ -1,4 +1,36 @@
-""" Lax-Wendroff finite-difference scheme """
+""" Lax-Wendroff finite-difference scheme
+
+    ∂n/∂t + ∂(fn)/∂x = g
+
+    inputs
+    ------
+    init_:  n
+    vars_:  x
+    flux_:  f
+    sink_:  (g, g)
+    time_:  Δt
+
+    outputs
+    -------
+    next_:  n
+
+    numerics
+    --------
+    n(j+1) =
+        n(j) +
+        Δt (g - Δ(fn)/Δx)(j) +
+        0.5 (Δt)^2 (
+            - Δf/Δx (-Δ(fn)/Δx + g)
+            - f(-Δ(fn)^2/Δx^2 + Δg/Δx)
+            + Δg/Δt
+        )(j)
+
+    Δt ≤ λΔx/f ∀ x
+    Δ(s)/Δx is first-order derivative with accuracy of 2
+    Δ(s)^/Δx^2 is second-order derivative with accuracy of 2
+    n(j, i) =? (n(j, i-1) + n(j, i+1))/2
+
+"""
 
 from hypersolver.util import jxt as jit
 from hypersolver.util import xnp as np
@@ -8,38 +40,7 @@ from hypersolver.derivative import ord1_acc2, ord2_acc2
 
 @jit(nopython=True)
 def lw_next(init_, vars_, flux_, sink_, time_):
-    """ next step according to Lax-Friedrics finite-difference scheme
-
-        ∂n/∂t + ∂(fn)/∂x = g
-
-        inputs
-        ------
-        init_:  n
-        vars_:  x
-        flux_:  f
-        sink_:  (g, g)
-        time_:  Δt
-
-        outputs
-        -------
-        next_:  n
-
-        numerics
-        --------
-        n(j+1) =
-            n(j) +
-            Δt (g - Δ(fn)/Δx)(j) +
-            0.5 (Δt)^2 (
-                - Δf/Δx (-Δ(fn)/Δx + g)
-                - f(-Δ(fn)^2/Δx^2 + Δg/Δx)
-                + Δg/Δt
-            )(j)
-
-        Δt ≤ λΔx/f ∀ x
-        Δ(s)/Δx is first-order derivative with accuracy of 2
-        Δ(s)^/Δx^2 is second-order derivative with accuracy of 2
-        n(j, i) =? (n(j, i-1) + n(j, i+1))/2
-    """
+    """ next step according to Lax-Friedrics finite-difference scheme """
 
     flux_ = term_util(flux_, init_)
 
@@ -70,9 +71,9 @@ def lw_loop(time, init_, vars_, _flux_, _sink_, stability):
     sols = np.asarray(init_).reshape(1, -1)
     tims = np.asarray(tidx[0]).reshape(1, -1)
 
-    _sink1 = _sink_(init_, vars_)
-    _sink2 = _sink_(init_, vars_)
-    print(_sink_(init_, vars_).shape, _flux_(init_, vars_).shape)
+    _sink1 = _sink_(init_, vars_).reshape(vars_.shape)
+    _sink2 = _sink_(init_, vars_).reshape(vars_.shape)
+
     _yvar = sols[0]
 
     for itrs in range(tidx[:-1].size):
@@ -90,6 +91,6 @@ def lw_loop(time, init_, vars_, _flux_, _sink_, stability):
 
         _yvar = next_
         _sink1 = _sink2
-        _sink2 = _sink_(next_, _yvar)
+        _sink2 = _sink_(next_, _yvar).reshape(vars_.shape)
 
     return tims, sols

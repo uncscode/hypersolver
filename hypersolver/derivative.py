@@ -14,7 +14,6 @@ def ord1_acc2(_func, _xvar):
     """ central differencing: order=1, accuracy=2 """
 
     _func, _xvar = np.asarray(_func), np.asarray(_xvar)
-    _func = np.reshape(_func, _xvar.shape)
 
     _derivative = (
         - (1/2)*_func[:-2] + (1/2)*_func[2:]
@@ -35,7 +34,6 @@ def ord1_acc4(_func, _xvar):
     """ central differencing: order1, accuracy=4 """
 
     _func, _xvar = np.asarray(_func), np.asarray(_xvar)
-    _func = np.reshape(_func, _xvar.shape)
 
     _result1 = (
         - (2/3)*_func[:-2] + (2/3)*_func[2:]
@@ -68,7 +66,6 @@ def ord2_acc2(_func, _xvar):
     """ central differencing: order=2, accuracy=2 """
 
     _func, _xvar = np.asarray(_func), np.asarray(_xvar)
-    _func = np.reshape(_func, _xvar.shape)
 
     _derivative = (
         _func[2:] - 2.0*_func[1:-1] + _func[:-2]
