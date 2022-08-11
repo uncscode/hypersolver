@@ -1,33 +1,28 @@
 """ Lax-Wendroff finite-difference scheme """
 
 from hypersolver.util import jxt as jit
-from hypersolver.util import term_util
+from hypersolver.util import xnp as np
+from hypersolver.util import term_util, time_step_util
 from hypersolver.derivative import ord1_acc2, ord2_acc2
 
 
 @jit(nopython=True)
-def lw_next(
-    init_vals,
-    vars_vals,
-    flux_term,
-    sink_term,
-    time_step,
-):
+def lw_next(init_, vars_, flux_, sink_, time_):
     """ next step according to Lax-Friedrics finite-difference scheme
 
         ∂n/∂t + ∂(fn)/∂x = g
 
         inputs
         ------
-        init_vals:  n
-        vars_vals:  x
-        flux_term:  f
-        sink_term:  (g, g)
-        stability:  λ = Δt/Δx where |fλ| ≤ 1, ∀ x
+        init_:  n
+        vars_:  x
+        flux_:  f
+        sink_:  (g, g)
+        time_:  Δt
 
         outputs
         -------
-        next_vals:  n
+        next_:  n
 
         numerics
         --------
@@ -46,20 +41,56 @@ def lw_next(
         n(j, i) =? (n(j, i-1) + n(j, i+1))/2
     """
 
-    flux_term = term_util(flux_term, init_vals)
+    flux_ = term_util(flux_, init_)
 
-    _sink1 = term_util(sink_term[0], vars_vals)
-    _sink2 = term_util(sink_term[1], vars_vals)
-    sink_term = (_sink1, _sink2)
+    sink_  = (term_util(sink_[0], vars_), term_util(sink_[1], vars_))
 
-    return init_vals + time_step * (
-        sink_term[1] - ord1_acc2(init_vals*flux_term, vars_vals)
-    ) + 0.5 * time_step**2 * (
-        -1.0 * ord1_acc2(flux_term, vars_vals)*(
-            -1.0 * ord1_acc2(init_vals*flux_term, vars_vals) +
-            sink_term[1]
-        ) - flux_term * (
-            -1.0*ord2_acc2(flux_term, vars_vals) +
-            ord1_acc2(sink_term[1], vars_vals)
-        ) + (sink_term[1] - sink_term[0])/time_step
+    return init_ + time_ * (
+        sink_[1] - ord1_acc2(init_*flux_, vars_)
+    ) + 0.5 * time_**2 * (
+        -1.0 * ord1_acc2(flux_, vars_)*(
+            -1.0 * ord1_acc2(init_*flux_, vars_) +
+            sink_[1]
+        ) - flux_ * (
+            -1.0*ord2_acc2(flux_, vars_) +
+            ord1_acc2(sink_[1], vars_)
+        ) + (sink_[1] - sink_[0])/time_
     )
+
+
+@jit(nopython=True)
+def lw_loop(time, init_, vars_, _flux_, _sink_, stability):
+    """ loop for lw scheme """
+
+    time_ = time_step_util(vars_, _flux_(init_, vars_), stability)
+
+    tidx = np.arange(time[0], time[-1] + time_, time_)
+
+    pts = np.asarray((tidx.size+1., np.asarray(time).size+100., 100.)).min()//1
+    sols = np.asarray(init_).reshape(1, -1)
+    tims = np.asarray(tidx[0]).reshape(1, -1)
+
+    _sink1 = _sink_(init_, vars_)
+    _sink2 = _sink_(init_, vars_)
+    print(_sink_(init_, vars_).shape, _flux_(init_, vars_).shape)
+    _yvar = sols[0]
+
+    for itrs in range(tidx[:-1].size):
+
+        next_ = lw_next(
+            _yvar, vars_,
+            _flux_(_yvar, vars_), (_sink1, _sink2),
+            tidx[itrs + 1] - tidx[itrs])
+
+        if ((itrs + 1) % (tidx.size//pts)) == 0:
+            sols = np.concatenate(
+                (sols, np.asarray(next_).reshape(1, -1)), axis=0)
+            tims = np.concatenate(
+                (tims, np.asarray(tidx[itrs]).reshape(1, -1)), axis=0)
+
+        _yvar = next_
+        _sink1 = _sink2
+        _sink2 = _sink_(next_, _yvar)
+
+
+    return tims, sols
