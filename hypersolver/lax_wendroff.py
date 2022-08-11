@@ -43,7 +43,7 @@ def lw_next(init_, vars_, flux_, sink_, time_):
 
     flux_ = term_util(flux_, init_)
 
-    sink_  = (term_util(sink_[0], vars_), term_util(sink_[1], vars_))
+    sink_ = (term_util(sink_[0], vars_), term_util(sink_[1], vars_))
 
     return init_ + time_ * (
         sink_[1] - ord1_acc2(init_*flux_, vars_)
@@ -91,6 +91,5 @@ def lw_loop(time, init_, vars_, _flux_, _sink_, stability):
         _yvar = next_
         _sink1 = _sink2
         _sink2 = _sink_(next_, _yvar)
-
 
     return tims, sols
