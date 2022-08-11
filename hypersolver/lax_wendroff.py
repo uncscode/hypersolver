@@ -62,6 +62,7 @@ def lw_next(init_, vars_, flux_, sink_, time_):
 @jit(nopython=True)
 def lw_loop(time, init_, vars_, _flux_, _sink_, stability):
     """ loop for lw scheme """
+    # pylint: disable=duplicate-code
 
     time_ = time_step_util(vars_, _flux_(init_, vars_), stability)
 

@@ -25,6 +25,7 @@ def test_lx_next():
 
 def test_lw_loop():
     """ test: loop for lw scheme """
+    # pylint: disable=duplicate-code
 
     xvar = np.linspace(1, 10, 100)
     yvar = 1.0 * (xvar > 4) - 1.0 * (xvar > 6)
