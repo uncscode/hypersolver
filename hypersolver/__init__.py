@@ -17,9 +17,9 @@
     note, fn is the flux across x.
 
     Usage:
-    >>> from hypersolver import solver
-    >>> solver(n0, x, t, f, g, **kwargs)
-    >>> # kwargs include "method", "backend", etc.
+    >>> from hypersolver import set_solver
+    >>> solver = set_solver(method="lax_friedrichs", backend="numpy")
+    >>> solver(n0, x, t, f, g)
 
     available `method`s:
     pde:
@@ -27,16 +27,12 @@
         - "lax_wendroff"
         - "method_of_characteristics" (experimental)
     ode:
-        - "rk2"
+        - "runge_kutta_2"
 
     available `backend`s:
         - "numpy" (default)
-        - "numba" (numpy + numba; experimental; suboptimal)
-        - "jax" (experimental; suboptimal with no performance gain)
+        - "numba" (numpy + numba; experimental)
 
-    available `solver_type`s:
-        - "unsplit" (default)
-        - "split" (soon; not yet available)
 """
 
 import os
@@ -53,39 +49,31 @@ __hyper_methods__ = [
     "lax_friedrichs",
     "lax_wendroff",
     "method_of_characteristics",
-    "rk2",
-]
-
-__hyper_solver_types__ = [
-    "unsplit",
-    "split",
+    "runge_kutta_2",
 ]
 
 
 def set_solver(
     method=os.environ.get("HS_METHOD", "lax_friedrichs"),
     backend=os.environ.get("HS_BACKEND", "numpy"),
-    verbosity=os.environ.get("HS_VERBOSITY", "0"),
-    solver_type=os.environ.get("HS_SOLVER_TYPE", "unsplit"),
 ):
     """ wrapper function to select solvers """
 
-    if method not in __hyper_methods__ or \
-            solver_type not in __hyper_solver_types__:
+    if method not in __hyper_methods__:
         raise ValueError("method not supported")
 
     os.environ["HS_METHOD"] = str(method)
     os.environ["HS_BACKEND"] = str(backend)
-    os.environ["HS_VERBOSITY"] = str(verbosity)
-    os.environ["HS_SOLVER_TYPE"] = str(solver_type)
 
     @jit(nopython=True)
     def _solver(*args):
         """ jit a loop """
         if method == "lax_friedrichs":
             return lx_loop(*args)
-        if method == "lax_wendroff":
-            return lw_loop(*args)
-        return rk_loop(*args)
+
+        return lw_loop(*args) if method == "lax_wendroff" else rk_loop(*args)
 
     return _solver
+
+
+solver = set_solver()

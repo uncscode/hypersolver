@@ -25,3 +25,27 @@ note, fn is the flux across x
 contributions to expand functionality are welcome!
 
 e.g. allowing f(x) to be f(n; x) is ~easy
+
+---
+
+usage
+
+```python
+import os
+os.environ["HS_BACKEND"] = "numpy" # default, or "numba"
+os.environ["HS_METHOD"] = "lax_friedrichs" # default, or "lax_wendroff"
+from hypersolver import solver
+solver(n0, x, t, f, g, stability)
+```
+
+available `method`s
+pde:
+    - "lax_friedrichs" (default)
+    - "lax_wendroff"
+    - "method_of_characteristics" (experimental)
+ode:
+    - "runge_kutta_2"
+
+available `backend`s
+    - "numpy" (default)
+    - "numba" (numpy + numba; experimental)
