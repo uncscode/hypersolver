@@ -30,11 +30,15 @@ e.g. allowing f(x) to be f(n; x) is ~easy
 
 usage
 
-from hypersolver import set_solver
-solver = set_solver(method="lax_friedrichs", backend="numpy")
-solver(n0, x, t, f, g)
+```python
+import os
+os.environ["HS_BACKEND"] = "numpy" # default, or "numba"
+os.environ["HS_METHOD"] = "lax_friedrichs" # default, or "lax_wendroff"
+from hypersolver import solver
+solver(n0, x, t, f, g, stability)
+```
 
-available `method`s:
+available `method`s
 pde:
     - "lax_friedrichs" (default)
     - "lax_wendroff"
@@ -42,6 +46,6 @@ pde:
 ode:
     - "runge_kutta_2"
 
-available `backend`s:
+available `backend`s
     - "numpy" (default)
     - "numba" (numpy + numba; experimental)

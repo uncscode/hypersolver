@@ -56,8 +56,6 @@ __hyper_methods__ = [
 def set_solver(
     method=os.environ.get("HS_METHOD", "lax_friedrichs"),
     backend=os.environ.get("HS_BACKEND", "numpy"),
-    verbosity=os.environ.get("HS_VERBOSITY", "0"),
-    solver_type=os.environ.get("HS_SOLVER_TYPE", "unsplit"),
 ):
     """ wrapper function to select solvers """
 
@@ -66,8 +64,6 @@ def set_solver(
 
     os.environ["HS_METHOD"] = str(method)
     os.environ["HS_BACKEND"] = str(backend)
-    os.environ["HS_VERBOSITY"] = str(verbosity)
-    os.environ["HS_SOLVER_TYPE"] = str(solver_type)
 
     @jit(nopython=True)
     def _solver(*args):
@@ -78,3 +74,5 @@ def set_solver(
         return lw_loop(*args) if method == "lax_wendroff" else rk_loop(*args)
 
     return _solver
+
+solver = set_solver()

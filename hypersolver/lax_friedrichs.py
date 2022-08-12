@@ -31,7 +31,7 @@ from hypersolver.util import time_step_util
 from hypersolver.derivative import ord1_acc2
 
 
-@jit(parallel=True)
+@jit(nopython=True)
 def lx_next(init_, vars_, flux_, sink_, time_):
     """ next step according to Lax-Friedrics finite-difference scheme """
 
