@@ -1,54 +1,67 @@
-""" Runge-Kutta methods for ode solvers """
+""" Runge-Kutta methods for ode solvers
 
-from hypersolver.util import term_util
+    dn/dt = f(n, x)
+
+    inputs:
+    -------
+    init_: n
+    vars_: x
+    func_: f
+    time_: Δt
+
+    outputs:
+    --------
+    next_: n
+
+    numerics:
+    ---------
+    - next_vals: n + Δt*f(n + Δt/2*f(n, x))
+
+"""
+
 from hypersolver.util import jxt as jit
+from hypersolver.util import xnp as np
+from hypersolver.util import term_util
+from hypersolver.util import time_step_util
 
 
-def rk2_next(
-    init_vals,
-    vars_vals,
-    func_term,
-    time_step,
-    **kwargs
-):
-    """ 2nd order Runge-Kutta method
+@jit(nopython=True)
+def rk2_next(init_, vars_, func_, sink_, time_):
+    """ 2nd order Runge-Kutta method """
+    _ = sink_
+    step1 = init_ + 0.5 * time_ * term_util(
+        func_(init_, vars_), init_)
 
-        dn/dt = f(n, x)
+    return init_ + time_ * term_util(
+        func_(step1, vars_), step1)
 
-        inputs:
-        -------
-        init_vals: n
-        vars_vals: x
-        func_term: f
-        time_step: Δt
 
-        outputs:
-        --------
-        next_vals: n
+@jit(nopython=True)
+def rk_loop(time, init_, vars_, func_, stability):
+    """ loop for rk """
+    # pylint: disable=duplicate-code
 
-        numerics:
-        ---------
-        - next_vals: n + Δt*f(n + Δt/2*f(n, x))
-    """
+    time_ = time_step_util(vars_, func_(init_, vars_), stability)
 
-    _ = kwargs.get("method", "rk2")
+    tidx = np.arange(time[0], time[-1] + time_, time_)
 
-    if callable(func_term):
-        _func_term = jit(nopython=True)(func_term)
-    else:
-        @jit(nopython=True)
-        def _func_term_(yvar, xvar):  # pylint: disable=unused-argument
-            """ jit the function """
-            return func_term
-        _func_term = _func_term_
+    pts = np.asarray((tidx.size+1., np.asarray(time).size+100., 100.)).min()//1
+    sols = np.asarray(init_).reshape(1, -1)
+    tims = np.asarray(tidx[0]).reshape(1, -1)
 
-    @jit(nopython=True)
-    def _next(init_vals, vars_vals, func_term, time_step):
-        """ 2nd order Runge-Kutta method """
-        step1 = init_vals + 0.5 * time_step * term_util(
-            func_term(init_vals, vars_vals), init_vals)
+    _yvar = sols[0]
 
-        return init_vals + time_step * term_util(
-            func_term(step1, vars_vals), step1)
+    for itrs in range(tidx[:-1].size):
+        next_ = rk2_next(
+            _yvar, vars_, func_, 0.0,
+            tidx[itrs+1] - tidx[itrs])
 
-    return _next(init_vals, vars_vals, _func_term, time_step)
+        if ((itrs + 1) % (tidx.size//pts)) == 0:
+            sols = np.concatenate(
+                (sols, np.asarray(next_).reshape(1, -1)), axis=0)
+            tims = np.concatenate(
+                (tims, np.asarray(tidx[itrs]).reshape(1, -1)), axis=0)
+
+        _yvar = next_
+
+    return tims, sols
