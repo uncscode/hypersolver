@@ -75,4 +75,5 @@ def set_solver(
 
     return _solver
 
+
 solver = set_solver()
