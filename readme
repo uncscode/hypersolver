@@ -25,3 +25,23 @@ note, fn is the flux across x
 contributions to expand functionality are welcome!
 
 e.g. allowing f(x) to be f(n; x) is ~easy
+
+---
+
+usage
+
+from hypersolver import set_solver
+solver = set_solver(method="lax_friedrichs", backend="numpy")
+solver(n0, x, t, f, g)
+
+available `method`s:
+pde:
+    - "lax_friedrichs" (default)
+    - "lax_wendroff"
+    - "method_of_characteristics" (experimental)
+ode:
+    - "runge_kutta_2"
+
+available `backend`s:
+    - "numpy" (default)
+    - "numba" (numpy + numba; experimental)
