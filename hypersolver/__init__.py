@@ -41,6 +41,11 @@
 
 import os
 
+from hypersolver.util import jxt as jit
+from hypersolver.lax_friedrichs import lx_loop
+from hypersolver.lax_wendroff import lw_loop
+from hypersolver.runge_kutta import rk_loop
+
 
 __version__ = "0.0.7"
 
@@ -57,13 +62,11 @@ __hyper_solver_types__ = [
 ]
 
 
-def solver(
-    *args,
+def set_solver(
     method=os.environ.get("HS_METHOD", "lax_friedrichs"),
     backend=os.environ.get("HS_BACKEND", "numpy"),
     verbosity=os.environ.get("HS_VERBOSITY", "0"),
     solver_type=os.environ.get("HS_SOLVER_TYPE", "unsplit"),
-    **kwargs
 ):
     """ wrapper function to select solvers """
 
@@ -76,22 +79,13 @@ def solver(
     os.environ["HS_VERBOSITY"] = str(verbosity)
     os.environ["HS_SOLVER_TYPE"] = str(solver_type)
 
-    # # pylint: disable=import-outside-toplevel
-    # from hypersolver.pde_solver_unsplit import solver_ as solver_upde
-    # # from hypersolver.pde_solver_split import solver_ as solver_spde
-    # from hypersolver.ode_solver import solver_ as solver_ode
+    @jit(nopython=True)
+    def _solver(*args):
+        """ jit a loop """
+        if method == "lax_friedrichs":
+            return lx_loop(*args)
+        if method == "lax_wendroff":
+            return lw_loop(*args)
+        return rk_loop(*args)
 
-    # if method.startswith("rk"):
-    #     return solver_ode(*args, method=method, **kwargs)
-
-    # # if method.endswith("_split"):
-    # #     return solver_spde(*args, method=method, **kwargs)
-
-    # return solver_upde(
-    #     *args,
-    #     method=method,
-    #     **kwargs
-    # )
-    _ = kwargs
-    _ = args
-    return 0
+    return _solver
