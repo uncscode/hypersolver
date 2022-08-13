@@ -37,7 +37,8 @@
 
 import os
 
-from hypersolver.util import jxt as jit
+from hypersolver.util import xnp
+from hypersolver.util import jxt
 from hypersolver.lax_friedrichs import lx_loop
 from hypersolver.lax_wendroff import lw_loop
 from hypersolver.runge_kutta import rk_loop
@@ -51,6 +52,9 @@ __hyper_methods__ = [
     "method_of_characteristics",
     "runge_kutta_2",
 ]
+
+np = xnp
+jit = jxt
 
 
 def set_solver(
