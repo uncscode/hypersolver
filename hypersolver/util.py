@@ -66,7 +66,7 @@ def term_util(term, orig):
         xnp.asarray(term, dtype=orig.dtype), orig)[0]
 
 
-# @jxt(nopython=True, parallel=True)
+# @jxt(nopython=True)
 def func_util(func, _vals, _vars, **kwargs):
     """ evaluate function if one """
     return func(_vals, _vars, **kwargs) if callable(func) else func

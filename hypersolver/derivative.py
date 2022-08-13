@@ -2,6 +2,7 @@
 
     available functions:
         - ord1_acc2: order=1, accuracy=2
+        - ord1_acc4: order=1, accuracy=4
         - ord2_acc2: order=2, accuracy=2
 """
 

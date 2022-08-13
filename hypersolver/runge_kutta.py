@@ -7,6 +7,7 @@
     init_: n
     vars_: x
     func_: f
+    sink_: 0
     time_: Δt
 
     outputs:
@@ -15,7 +16,7 @@
 
     numerics:
     ---------
-    - next_vals: n + Δt*f(n + Δt/2*f(n, x))
+    - rk2 next_: n + Δt*f(n + Δt/2*f(n, x))
 
 """
 
