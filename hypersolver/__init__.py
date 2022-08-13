@@ -44,7 +44,7 @@ from hypersolver.lax_wendroff import lw_loop
 from hypersolver.runge_kutta import rk_loop
 
 
-__version__ = "0.0.7"
+__version__ = "0.0.8"
 
 __hyper_methods__ = [
     "lax_friedrichs",
