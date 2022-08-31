@@ -14,9 +14,8 @@ def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
 
     if backend == "jax":
         warnings.warn(
-            "experimental jax support is suboptimal with no performance gain")
-        import jax.numpy as jnp  # pylint: disable=import-outside-toplevel
-        return jnp
+            f"no more {backend} support, reverting to numpy")
+        return np
 
     return np
 
