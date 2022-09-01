@@ -14,9 +14,8 @@ def set_xnp(backend=os.environ.get("HS_BACKEND", "numpy")):
 
     if backend == "jax":
         warnings.warn(
-            "experimental jax support is suboptimal with no performance gain")
-        import jax.numpy as jnp  # pylint: disable=import-outside-toplevel
-        return jnp
+            f"no more {backend} support, reverting to numpy")
+        return np
 
     return np
 
@@ -66,7 +65,7 @@ def term_util(term, orig):
         xnp.asarray(term, dtype=orig.dtype), orig)[0]
 
 
-# @jxt(nopython=True, parallel=True)
+# @jxt(nopython=True)
 def func_util(func, _vals, _vars, **kwargs):
     """ evaluate function if one """
     return func(_vals, _vars, **kwargs) if callable(func) else func
