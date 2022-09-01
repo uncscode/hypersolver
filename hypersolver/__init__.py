@@ -39,8 +39,11 @@ import os
 
 from hypersolver.util import xnp
 from hypersolver.util import jxt
+
 from hypersolver.lax_friedrichs import lx_loop
+
 from hypersolver.lax_wendroff import lw_loop
+
 from hypersolver.runge_kutta import rk_loop
 
 
@@ -49,7 +52,6 @@ __version__ = "0.0.8"
 __hyper_methods__ = [
     "lax_friedrichs",
     "lax_wendroff",
-    "method_of_characteristics",
     "runge_kutta_2",
 ]
 
