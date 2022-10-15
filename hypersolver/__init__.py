@@ -37,17 +37,12 @@
 
 import os
 
-from hypersolver.util import xnp
-from hypersolver.util import jxt
-
 from hypersolver.lax_friedrichs import lx_loop
-
 from hypersolver.lax_wendroff import lw_loop
-
 from hypersolver.runge_kutta import rk_loop
+from hypersolver.util import jxt, xnp
 
-
-__version__ = "0.0.8"
+__version__ = "0.0.9"
 
 __hyper_methods__ = [
     "lax_friedrichs",
