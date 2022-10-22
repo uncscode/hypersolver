@@ -24,8 +24,8 @@ dependencies = ["numpy", "scipy"]
 dynamic = ["version"]
 
 [project.urls]
-homepage = "https://github.com/ngam/hypersolver"
-repository = "https://github.com/ngam/hypersolver"
+homepage = "https://github.com/uncscode/hypersolver"
+repository = "https://github.com/uncscode/hypersolver"
 
 [project.optional-dependencies]
 dev = [
